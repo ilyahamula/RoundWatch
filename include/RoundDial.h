@@ -18,7 +18,7 @@ private:
     void RunToZero();
 
 private:
-    uint16_t numDivision;
+    uint16_t m_numDivision;
     uint16_t m_stepsPerDiv;
     uint8_t m_stopperPin;
     Stepper m_stepperMotor;
