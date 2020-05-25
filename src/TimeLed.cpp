@@ -51,7 +51,7 @@ void TimeLed::Show()
   const auto bottomColor = strip.Color(m_bottomColor.red * m_bottomBrightness,
               m_bottomColor.green * m_bottomBrightness,
               m_bottomColor.blue * m_bottomBrightness);
-  for (uint16_t i = 6; i < 5; ++i)
+  for (uint16_t i = 6; i < LED_COUNT; ++i)
     strip.setPixelColor(i, bottomColor);
 
   strip.show();
