@@ -42,16 +42,16 @@ void TimeLed::Show()
 {
 
   const auto topColor = strip.Color(m_topColor.red * m_topBrightness, 
-                              m_topColor.green * m_topBrightness, 
-                              m_topColor.blue * m_topBrightness);
-  for (uint16_t i = 0; i < 6; ++i)
+                                    m_topColor.green * m_topBrightness, 
+                                    m_topColor.blue * m_topBrightness);
+  for (uint16_t i = 0; i < 6; i++)
     strip.setPixelColor(i, topColor);
 
 
   const auto bottomColor = strip.Color(m_bottomColor.red * m_bottomBrightness,
-              m_bottomColor.green * m_bottomBrightness,
-              m_bottomColor.blue * m_bottomBrightness);
-  for (uint16_t i = 6; i < LED_COUNT; ++i)
+                                      m_bottomColor.green * m_bottomBrightness,
+                                      m_bottomColor.blue * m_bottomBrightness);
+  for (uint16_t i = 6; i < LED_COUNT; i++)
     strip.setPixelColor(i, bottomColor);
 
   strip.show();
