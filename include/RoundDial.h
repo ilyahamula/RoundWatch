@@ -2,7 +2,7 @@
 #define  ROUNDIAL_H
 
 #include <Arduino.h>
-#include <Stepper.h>
+#include "Stepper_28BYJ_48.h"
 
 class RoundDial
 {
@@ -21,7 +21,7 @@ private:
     uint16_t m_numDivision;
     uint16_t m_stepsPerDiv;
     uint8_t m_stopperPin;
-    Stepper m_stepperMotor;
+    Stepper_28BYJ_48 m_stepperMotor;
 };
 
 #endif  
