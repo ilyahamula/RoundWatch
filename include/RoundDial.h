@@ -12,16 +12,18 @@ public:
     void SetNumDivisions(const uint8_t divisions);
     void SetStopperPin(const uint8_t pin);
     void Setup();
-    void MakeStep();
+    void MoveToNextDiv();
 
 private:
     void RunToZero();
 
 private:
-    uint16_t m_numDivision;
+    Stepper_28BYJ_48 m_stepperMotor;
+
+private:
+    uint16_t m_numDivisions;
     uint16_t m_stepsPerDiv;
     uint8_t m_stopperPin;
-    Stepper_28BYJ_48 m_stepperMotor;
 };
 
 #endif  
