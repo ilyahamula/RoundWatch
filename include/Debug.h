@@ -13,7 +13,18 @@ class Debug
     static bool m_serialSetup;
 #endif
 public:
-    static void Print(String text);
+    template  <typename T>
+    static void Print(T text)
+    {
+#ifdef DEBUG
+        if (!m_serialSetup)
+        {
+            Serial.begin(9600);
+            m_serialSetup = true;
+        }
+        Serial.print(text);
+#endif
+    }
 };
 
 #endif
