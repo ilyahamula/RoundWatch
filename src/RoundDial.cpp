@@ -56,7 +56,7 @@ void RoundDial::Setup()
 
 void RoundDial::MoveToNextDiv()
 {
-
+    m_stepperMotor.step(m_stepsPerDiv);
 }
 
 void RoundDial::RunToZero()
