@@ -24,17 +24,34 @@ void RoundDial::SetStopperPin(const uint8_t pin)
 
 void RoundDial::Setup()
 {
+    Debug::Print("Setup of Dial\n");
     RunToZero();
+
+    uint32_t numSteps = 0;
     bool madeFullRound = false;
     while (digitalRead(m_stopperPin) && !madeFullRound)
     {
         m_stepperMotor.step(1);
+        ++numSteps;
         while (!digitalRead(m_stopperPin))
         {
             m_stepperMotor.step(1);
+            ++numSteps;
             madeFullRound = true;
         }
     }
+    Debug::Print("Num of steps: ");
+    Debug::Print(numSteps);
+    Debug::Print("\n");
+    Debug::Print("Num of division: ");
+    Debug::Print(m_numDivisions);
+    Debug::Print("\n");
+
+    m_stepsPerDiv = numSteps / m_numDivisions;
+
+    Debug::Print("steps per division: ");
+    Debug::Print(m_stepsPerDiv);
+    Debug::Print("\n");
 }
 
 void RoundDial::MoveToNextDiv()
