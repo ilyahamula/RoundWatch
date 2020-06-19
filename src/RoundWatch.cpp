@@ -22,11 +22,16 @@ void RoundWatch::SetNumDivisions(const DIAL dial, const uint8_t divisions)
 {
     if (m_dials[INT(dial)])
         m_dials[INT(dial)]->SetNumDivisions(divisions);
+    
+    m_majorDiv[INT(dial)] = new bool[divisions];
+    for (uint16_t i = 0; i < divisions; ++i)
+        m_majorDiv[i] = false;
 }
 
-void RoundWatch::SetMajorDivisions(const DIAL dial, int n, int* array)
+void RoundWatch::SetMajorDivisions(const DIAL dial, uint16_t n, uint16_t* array)
 {
-   
+   for (uint16_t i = 0; i < n; ++i)
+    m_majorDiv[INT(dial)][array[i]] = true;
 }
 
 void RoundWatch::SetStopperPin(const DIAL dial, const uint8_t pin)
