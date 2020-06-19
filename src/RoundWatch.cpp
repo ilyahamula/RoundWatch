@@ -25,11 +25,14 @@ void RoundWatch::SetNumDivisions(const DIAL dial, const uint8_t divisions)
     
     m_majorDiv[INT(dial)] = new bool[divisions];
     for (uint16_t i = 0; i < divisions; ++i)
-        m_majorDiv[i] = false;
+        m_majorDiv[INT(dial)][i] = false;
 }
 
 void RoundWatch::SetMajorDivisions(const DIAL dial, uint16_t n, uint16_t* array)
 {
+   if (!m_majorDiv[INT(dial)])
+    return;
+    
    for (uint16_t i = 0; i < n; ++i)
     m_majorDiv[INT(dial)][array[i]] = true;
 }
