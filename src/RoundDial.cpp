@@ -56,7 +56,12 @@ void RoundDial::Setup()
 
 void RoundDial::MoveToNextDiv()
 {
+    m_stepperMotor.step(m_stepsPerDiv);
+}
 
+int RoundDial::GetNumDivisions() const
+{
+    return m_numDivisions;
 }
 
 void RoundDial::RunToZero()

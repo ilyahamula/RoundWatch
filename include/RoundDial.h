@@ -14,6 +14,8 @@ public:
     void Setup();
     void MoveToNextDiv();
 
+    int GetNumDivisions() const;
+
 private:
     void RunToZero();
 
