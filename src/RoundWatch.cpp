@@ -1,0 +1,77 @@
+#include "RoundWatch.h"
+#include "Debug.h"
+
+#define NOT_DEFINED 0
+
+RoundWatch::RoundWatch()
+    : m_dials()
+    , m_leds()
+    , m_majorDiv()
+    , m_timeValue()
+{
+    m_timeValue[INT(DIAL::HOURS)] = 0;
+    m_timeValue[INT(DIAL::MINUTES)] = 0;
+}
+
+void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
+{
+    m_dials[INT(dial)] = new RoundDial(in1, in2, in3, in4);
+}
+
+void RoundWatch::SetNumDivisions(const DIAL dial, const uint8_t divisions)
+{
+    if (m_dials[INT(dial)])
+        m_dials[INT(dial)]->SetNumDivisions(divisions);
+}
+
+void RoundWatch::SetMajorDivisions(const DIAL dial, int n, int* array)
+{
+   
+}
+
+void RoundWatch::SetStopperPin(const DIAL dial, const uint8_t pin)
+{
+    if (m_dials[INT(dial)])
+        m_dials[INT(dial)]->SetStopperPin(pin);
+}
+
+void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)
+{
+    m_leds[INT(dial)] = new TimeLed(pin);
+}
+
+void RoundWatch::SetTopBrightness(const DIAL dial, const double brightness)
+{
+    if (m_leds[INT(dial)])
+        m_leds[INT(dial)]->SetTopBrightness(brightness);
+}
+
+void RoundWatch::SetBottomBrightness(const DIAL dial, const double brightness)
+{
+    if (m_leds[INT(dial)])
+        m_leds[INT(dial)]->SetBottomBrightness(brightness);
+}
+
+void RoundWatch::SetTopColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    if (m_leds[INT(dial)])
+        m_leds[INT(dial)]->SetTopColor(r, g, b);
+}
+
+void RoundWatch::SetBottomColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b)
+{
+    if (m_leds[INT(dial)])
+        m_leds[INT(dial)]->SetBottomColor(r, g, b);
+}
+
+void RoundWatch::Setup()
+{
+    // probably better to use threads
+    for (uint8_t i = 0; i < INT(DIAL::NUM_DIALS); ++i)
+        m_dials[i]->Setup();
+}
+
+void RoundWatch::SetTime(const int16_t hour, const int16_t min, const int16_t sec)
+{
+    
+}
