@@ -42,6 +42,18 @@ void RoundDial::MoveToNextDiv()
     SaveCurrDivToStorage();
 }
 
+void RoundDial::MoveForward()
+{
+    // Save to EEPROOM
+    //m_currDiv;
+}
+
+void RoundDial::MoveBackward()
+{
+    // Save to EEPROOM
+    //m_currDiv;
+}
+
 void RoundDial::SaveCurrDivToStorage()
 {
     // Save to EEPROOM
