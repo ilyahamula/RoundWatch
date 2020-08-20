@@ -2,12 +2,13 @@
 #include "Debug.h"
 
 #define NOT_DEFINED 0
+#define STEP_PER_DEG 20
 
 RoundDial::RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
     : m_stepperMotor(in1, in2, in3, in4)
     , m_numDivisions(NOT_DEFINED)
     , m_stepsPerDiv(NOT_DEFINED)
-    , m_stopperPin(NOT_DEFINED)
+    , m_currDiv(0)
 {
 }
 
@@ -16,59 +17,38 @@ void RoundDial::SetNumDivisions(const uint8_t divisions)
     m_numDivisions = divisions;
 }
 
-void RoundDial::SetStopperPin(const uint8_t pin)
-{
-    m_stopperPin = pin;
-    pinMode(m_stopperPin, INPUT_PULLDOWN);
-}
-
-void RoundDial::Setup()
-{
-    Debug::Print("Setup of Dial\n");
-    RunToZero();
-
-    uint32_t numSteps = 0;
-    bool madeFullRound = false;
-    while (digitalRead(m_stopperPin) && !madeFullRound)
-    {
-        m_stepperMotor.step(1);
-        ++numSteps;
-        while (!digitalRead(m_stopperPin))
-        {
-            m_stepperMotor.step(1);
-            ++numSteps;
-            madeFullRound = true;
-        }
-    }
-    Debug::Print("Num of steps: ");
-    Debug::Print(numSteps);
-    Debug::Print("\n");
-    Debug::Print("Num of division: ");
-    Debug::Print(m_numDivisions);
-    Debug::Print("\n");
-
-    m_stepsPerDiv = numSteps / m_numDivisions;
-
-    Debug::Print("steps per division: ");
-    Debug::Print(m_stepsPerDiv);
-    Debug::Print("\n");
-}
-
-void RoundDial::MoveToNextDiv()
-{
-    m_stepperMotor.step(m_stepsPerDiv);
-}
-
 int RoundDial::GetNumDivisions() const
 {
     return m_numDivisions;
 }
 
-void RoundDial::RunToZero()
+int RoundDial::GetCurrDiv() const
 {
-    Debug::Print("Start run to zero\n");
-    while (!digitalRead(m_stopperPin))
-        m_stepperMotor.step(1);
+    return m_currDiv;
+}
 
-    Debug::Print("End run to zero\n");
+void RoundDial::Setup()
+{
+    Debug::Print("Setup of Dial\n");
+    UpdateCurrDivFromStorage();
+}
+
+void RoundDial::MoveToNextDiv()
+{
+    m_stepperMotor.step(m_stepsPerDiv);
+    m_currDiv++;
+    if (m_currDiv == m_numDivisions)
+        m_currDiv = 0;
+    SaveCurrDivToStorage();
+}
+
+void RoundDial::SaveCurrDivToStorage()
+{
+    // Save to EEPROOM
+    //m_currDiv;
+}
+
+void RoundDial::UpdateCurrDivFromStorage()
+{
+    m_currDiv = 0;// Read from EEPROOM
 }

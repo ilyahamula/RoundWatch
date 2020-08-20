@@ -37,12 +37,6 @@ void RoundWatch::SetMajorDivisions(const DIAL dial, uint16_t n, uint16_t* array)
     m_majorDiv[INT(dial)][array[i]] = true;
 }
 
-void RoundWatch::SetStopperPin(const DIAL dial, const uint8_t pin)
-{
-    if (m_dials[INT(dial)])
-        m_dials[INT(dial)]->SetStopperPin(pin);
-}
-
 void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)
 {
     m_leds[INT(dial)] = new TimeLed(pin);

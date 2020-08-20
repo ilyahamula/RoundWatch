@@ -10,14 +10,18 @@ public:
     RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
 
     void SetNumDivisions(const uint8_t divisions);
-    void SetStopperPin(const uint8_t pin);
+    int GetNumDivisions() const;
+    int GetCurrDiv() const;
     void Setup();
     void MoveToNextDiv();
 
-    int GetNumDivisions() const;
+public: // for clibration through WEB interface
+    void MoveForward();
+    void MoveBackward();
 
 private:
-    void RunToZero();
+    void SaveCurrDivToStorage();
+    void UpdateCurrDivFromStorage();
 
 private:
     Stepper_28BYJ_48 m_stepperMotor;
@@ -25,7 +29,7 @@ private:
 private:
     uint16_t m_numDivisions;
     uint16_t m_stepsPerDiv;
-    uint8_t m_stopperPin;
+    uint16_t m_currDiv;
 };
 
 #endif  
