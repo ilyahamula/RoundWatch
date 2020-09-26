@@ -1,10 +1,22 @@
+#include <EEPROM.h>
+
 #include "RoundDial.h"
 #include "Debug.h"
 
 #define NOT_DEFINED 0
+#define EEPROM_SIZE 2
+#define HOURS_ADDRESS 0
+#define MIN_ADDRESS 1
 
 RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
+    static bool isFlashInit = false;
+    if (!isFlashInit)
+    {
+        EEPROM.begin(EEPROM_SIZE);
+        isFlashInit = true;
+    }
+
     if (type == DIAL::HOURS)
         return new RoundDialHours(in1, in2, in3, in4);
     if (type == DIAL::MINUTES)
@@ -23,12 +35,6 @@ RoundDial::RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, co
 
 RoundDial::~RoundDial()
 {
-}
-
-void RoundDial::Setup()
-{
-    Debug::Print("Setup of Dial\n");
-    UpdateCurrDivFromStorage();
 }
 
 void RoundDial::MoveToNextDiv()
@@ -50,17 +56,6 @@ void RoundDial::MoveBackward()
 {
     // Save to EEPROOM
     //m_currDiv;
-}
-
-void RoundDial::SaveCurrDivToStorage()
-{
-    // Save to EEPROOM
-    //m_currDiv;
-}
-
-void RoundDial::UpdateCurrDivFromStorage()
-{
-    m_currDiv = 0;// Read from EEPROOM
 }
 
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
@@ -93,6 +88,17 @@ void RoundDialHours::SetTimeValue(const uint8_t value)
 bool RoundDialHours::IsCurDivMajor() const
 {
     return m_majorDiv[m_currDiv];
+}
+
+void RoundDialHours::Setup()
+{
+    m_currDiv = EEPROM.read(HOURS_ADDRESS);
+}
+
+void RoundDialHours::SaveCurrDivToStorage()
+{
+    EEPROM.write(HOURS_ADDRESS, m_currDiv);
+    EEPROM.commit();
 }
 
 //--------------------Dial of Minutes-------------------------------------------------------------------------------------------------------
@@ -135,3 +141,15 @@ bool RoundDialMinutes::IsCurDivMajor() const
 {
     return m_majorDiv[m_currDiv];
 }
+
+void RoundDialMinutes::Setup()
+{
+    m_currDiv = EEPROM.read(MIN_ADDRESS);
+}
+
+void RoundDialMinutes::SaveCurrDivToStorage()
+{
+    EEPROM.write(MIN_ADDRESS, m_currDiv);
+    EEPROM.commit();
+}
+

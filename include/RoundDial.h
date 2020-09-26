@@ -28,18 +28,16 @@ public:
 
     virtual DIAL GetType() const = 0;
     virtual void SetTimeValue(const uint8_t value) = 0;
-    virtual bool IsCurDivMajor() const;
-
-    void Setup();
-    void MoveToNextDiv();
+    virtual bool IsCurDivMajor() const = 0;
+    virtual void Setup() = 0;
 
 public: // for clibration through WEB interface
     void MoveForward();
     void MoveBackward();
 
 protected:
-    void SaveCurrDivToStorage();
-    void UpdateCurrDivFromStorage();
+    void MoveToNextDiv();
+    virtual void SaveCurrDivToStorage() = 0;
 
 protected:
     Stepper_28BYJ_48 m_stepperMotor;
@@ -58,6 +56,10 @@ public:
     DIAL GetType() const override;
     void SetTimeValue(const uint8_t value) override;
     bool IsCurDivMajor() const override;
+    void Setup() override;
+
+protected:
+    void SaveCurrDivToStorage() override;
 
 private:
     static bool m_majorDiv[HOURS_DIV_NUM];
@@ -71,6 +73,10 @@ public:
     DIAL GetType() const override;
     void SetTimeValue(const uint8_t value);
     bool IsCurDivMajor() const override;
+    void Setup() override;
+
+protected:
+    void SaveCurrDivToStorage() override;
 
 private:
     static bool m_majorDiv[MIN_DIV_NUM];
