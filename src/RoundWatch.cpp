@@ -6,7 +6,6 @@
 RoundWatch::RoundWatch()
     : m_dials()
     , m_leds()
-    , m_majorDiv()
     , m_timeValue()
 {
     m_timeValue[INT(DIAL::HOURS)] = 0;
@@ -33,26 +32,7 @@ RoundWatch::~RoundWatch()
 void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
     if (!m_dials[INT(dial)])
-        m_dials[INT(dial)] = new RoundDial(in1, in2, in3, in4);
-}
-
-void RoundWatch::SetNumDivisions(const DIAL dial, const uint8_t divisions)
-{
-    if (m_dials[INT(dial)])
-        m_dials[INT(dial)]->SetNumDivisions(divisions);
-    
-    m_majorDiv[INT(dial)] = new bool[divisions];
-    for (uint16_t i = 0; i < divisions; ++i)
-        m_majorDiv[INT(dial)][i] = false;
-}
-
-void RoundWatch::SetMajorDivisions(const DIAL dial, uint16_t n, uint16_t* array)
-{
-   if (!m_majorDiv[INT(dial)])
-    return;
-    
-   for (uint16_t i = 0; i < n; ++i)
-    m_majorDiv[INT(dial)][array[i]] = true;
+        m_dials[INT(dial)] = RoundDial::CreateDial(dial, in1, in2, in3, in4);
 }
 
 void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)
