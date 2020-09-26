@@ -18,6 +18,18 @@ RoundWatch::RoundWatch()
     m_leds[INT(DIAL::MINUTES)] = nullptr;
 }
 
+RoundWatch::~RoundWatch()
+{
+    if (!m_dials[INT(DIAL::HOURS)])
+        delete m_dials[INT(DIAL::MINUTES)];
+    if (!m_dials[INT(DIAL::MINUTES)])
+        delete m_dials[INT(DIAL::HOURS)];
+    if (!m_leds[INT(DIAL::HOURS)])
+        delete m_leds[INT(DIAL::HOURS)];
+    if (!m_leds[INT(DIAL::MINUTES)])
+        delete m_leds[INT(DIAL::MINUTES)];
+}
+
 void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
     if (!m_dials[INT(dial)])
