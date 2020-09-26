@@ -46,16 +46,23 @@ void RoundDial::MoveToNextDiv()
     SaveCurrDivToStorage();
 }
 
+void RoundDial::MoveToPrevDiv()
+{
+    m_stepperMotor.step(-1 * m_stepsPerDiv);
+    m_currDiv--;
+    if (m_currDiv < 0)
+        m_currDiv = 0;
+    SaveCurrDivToStorage();
+}
+
 void RoundDial::MoveForward()
 {
-    // Save to EEPROOM
-    //m_currDiv;
+    m_stepperMotor.step(1);
 }
 
 void RoundDial::MoveBackward()
 {
-    // Save to EEPROOM
-    //m_currDiv;
+    m_stepperMotor.step(-1);
 }
 
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
@@ -80,7 +87,13 @@ void RoundDialHours::SetTimeValue(const uint8_t value)
     while (value > m_currDiv || (m_currDiv == 23 && value == 0))
     {
         MoveToNextDiv();
-        Debug::Print("Hours Moved to: ");
+        Debug::Print("\n(Hours) Moved to: ");
+        Debug::Print(m_currDiv);
+    }
+    while (value < m_currDiv)
+    {
+        MoveToPrevDiv();
+        Debug::Print("\n(Hours) Moved to: ");
         Debug::Print(m_currDiv);
     }
 }
@@ -93,6 +106,8 @@ bool RoundDialHours::IsCurDivMajor() const
 void RoundDialHours::Setup()
 {
     m_currDiv = EEPROM.read(HOURS_ADDRESS);
+    Debug::Print("\n(Hours) updated actual division: ");
+    Debug::Print(m_currDiv);
 }
 
 void RoundDialHours::SaveCurrDivToStorage()
@@ -132,7 +147,13 @@ void RoundDialMinutes::SetTimeValue(const uint8_t value)
     while (actualDiv > m_currDiv || (m_currDiv == 23 && actualDiv == 0))
     {
         MoveToNextDiv();
-        Debug::Print("Minutes Moved to: ");
+        Debug::Print("\n(Minutes) Moved to: ");
+        Debug::Print(m_currDiv);
+    }
+    while (actualDiv < m_currDiv)
+    {
+        MoveToPrevDiv();
+        Debug::Print("\n(Minutes) Moved to: ");
         Debug::Print(m_currDiv);
     }
 }
@@ -145,6 +166,8 @@ bool RoundDialMinutes::IsCurDivMajor() const
 void RoundDialMinutes::Setup()
 {
     m_currDiv = EEPROM.read(MIN_ADDRESS);
+    Debug::Print("\n(Minutes) updated actual division: ");
+    Debug::Print(m_currDiv);
 }
 
 void RoundDialMinutes::SaveCurrDivToStorage()

@@ -31,12 +31,13 @@ public:
     virtual bool IsCurDivMajor() const = 0;
     virtual void Setup() = 0;
 
-public: // for clibration through WEB interface
+public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
 
 protected:
     void MoveToNextDiv();
+    void MoveToPrevDiv();
     virtual void SaveCurrDivToStorage() = 0;
 
 protected:
