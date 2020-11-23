@@ -24,7 +24,13 @@ public:
 
     // RoundWatch interface
     void Setup();
-    void SetTime(const int16_t hour, const int16_t min = -1, const int16_t sec = -1);
+    void SetRealTime(const uint8_t hour, const uint8_t min = 0, const uint8_t sec = 0);
+    void SetDisplayedTime(const uint8_t hour, const uint8_t min = 0, const uint8_t sec = 0);
+
+    // for calibration
+    void MoveForward(const DIAL dial);
+    void MoveBackward(const DIAL dial);
+    void MoveOneDivForward(const DIAL dial);
 
 private:
     static const int num = INT(DIAL::NUM_DIALS);

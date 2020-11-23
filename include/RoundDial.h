@@ -34,7 +34,9 @@ public:
 public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
-
+    void MoveOneDivForward();
+    void SetActualDivision(const uint8_t value);
+    
 protected:
     void MoveToNextDiv();
     void MoveToPrevDiv();
@@ -72,7 +74,7 @@ public:
     RoundDialMinutes(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
 
     DIAL GetType() const override;
-    void SetTimeValue(const uint8_t value);
+    void SetTimeValue(const uint8_t value) override;
     bool IsCurDivMajor() const override;
     void Setup() override;
 

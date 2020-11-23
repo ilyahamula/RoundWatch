@@ -20,7 +20,7 @@ RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8
     if (type == DIAL::HOURS)
         return new RoundDialHours(in1, in2, in3, in4);
     if (type == DIAL::MINUTES)
-        return new RoundDialHours(in1, in2, in3, in4);
+        return new RoundDialMinutes(in1, in2, in3, in4);
 
     return nullptr;
 }
@@ -39,6 +39,7 @@ RoundDial::~RoundDial()
 
 void RoundDial::MoveToNextDiv()
 {
+    Debug::Print("\nMoveToNextDiv()");
     m_stepperMotor.step(m_stepsPerDiv);
     m_currDiv++;
     if (m_currDiv == m_numDivisions)
@@ -48,7 +49,8 @@ void RoundDial::MoveToNextDiv()
 
 void RoundDial::MoveToPrevDiv()
 {
-    m_stepperMotor.step(-1 * m_stepsPerDiv);
+    Debug::Print("\nMoveToPrevDiv()");
+    m_stepperMotor.step((-1 * m_stepsPerDiv));
     m_currDiv--;
     if (m_currDiv < 0)
         m_currDiv = 0;
@@ -57,12 +59,22 @@ void RoundDial::MoveToPrevDiv()
 
 void RoundDial::MoveForward()
 {
-    m_stepperMotor.step(1);
+    m_stepperMotor.step(10);
 }
 
 void RoundDial::MoveBackward()
 {
-    m_stepperMotor.step(-1);
+    m_stepperMotor.step(-10);
+}
+
+void RoundDial::MoveOneDivForward()
+{
+    m_stepperMotor.step(m_stepsPerDiv);
+}
+
+void RoundDial::SetActualDivision(const uint8_t value)
+{
+    m_currDiv = value;
 }
 
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
@@ -84,6 +96,9 @@ DIAL RoundDialHours::GetType() const
 
 void RoundDialHours::SetTimeValue(const uint8_t value)
 {
+    if (value >= HOURS_DIV_NUM)
+        return;
+        
     while (value > m_currDiv || (m_currDiv == 23 && value == 0))
     {
         MoveToNextDiv();
@@ -106,6 +121,8 @@ bool RoundDialHours::IsCurDivMajor() const
 void RoundDialHours::Setup()
 {
     m_currDiv = EEPROM.read(HOURS_ADDRESS);
+    if (m_currDiv > m_numDivisions)
+        m_currDiv = 0;
     Debug::Print("\n(Hours) updated actual division: ");
     Debug::Print(m_currDiv);
 }
@@ -114,6 +131,8 @@ void RoundDialHours::SaveCurrDivToStorage()
 {
     EEPROM.write(HOURS_ADDRESS, m_currDiv);
     EEPROM.commit();
+    Debug::Print("\n(Hours) saved actual division: ");
+    Debug::Print(m_currDiv);
 }
 
 //--------------------Dial of Minutes-------------------------------------------------------------------------------------------------------
@@ -143,6 +162,9 @@ DIAL RoundDialMinutes::GetType() const
 
 void RoundDialMinutes::SetTimeValue(const uint8_t value)
 {
+    if (value >= MINUTES_NUM)
+        return;
+        
     int actualDiv = m_minToDiv[value];
     while (actualDiv > m_currDiv || (m_currDiv == 23 && actualDiv == 0))
     {
@@ -166,6 +188,8 @@ bool RoundDialMinutes::IsCurDivMajor() const
 void RoundDialMinutes::Setup()
 {
     m_currDiv = EEPROM.read(MIN_ADDRESS);
+    if (m_currDiv > m_numDivisions)
+        m_currDiv = 0;
     Debug::Print("\n(Minutes) updated actual division: ");
     Debug::Print(m_currDiv);
 }
@@ -174,5 +198,7 @@ void RoundDialMinutes::SaveCurrDivToStorage()
 {
     EEPROM.write(MIN_ADDRESS, m_currDiv);
     EEPROM.commit();
+    Debug::Print("\n(Minutes) saved actual division: ");
+    Debug::Print(m_currDiv);
 }
 

@@ -65,17 +65,78 @@ void RoundWatch::SetBottomColor(const DIAL dial, const uint8_t r, const uint8_t 
         m_leds[INT(dial)]->SetBottomColor(r, g, b);
 }
 
+void RoundWatch::MoveForward(const DIAL dial)
+{
+    RoundDial* dl = m_dials[INT(dial)];
+    if (dl)
+        dl->MoveForward();
+}
+
+void RoundWatch::MoveBackward(const DIAL dial)
+{
+    RoundDial* dl = m_dials[INT(dial)];
+    if (dl)
+        dl->MoveBackward();
+}
+
+void RoundWatch::MoveOneDivForward(const DIAL dial)
+{
+    RoundDial* dl = m_dials[INT(dial)];
+    if (dl)
+        dl->MoveOneDivForward();
+}
+
 void RoundWatch::Setup()
 {
-    // probably better to use threads
     for (uint8_t i = 0; i < INT(DIAL::NUM_DIALS); ++i)
     {
+        Debug::Print("\nSetup ");
+        Debug::Print(i);
+        Debug::Print(" dial");
         if (m_dials[i])
             m_dials[i]->Setup();
+        if (m_leds[i])
+            m_leds[i]->Show();
+    }
+    Debug::Print("\nSetup done!");
+}
+
+void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_t sec)
+{
+
+    RoundDial* rdHour = m_dials[INT(DIAL::HOURS)];
+    if (rdHour)
+    {
+        rdHour->SetTimeValue(hour);
+        if (rdHour->IsCurDivMajor())
+        {
+            //m_leds[INT(DIAL::HOURS)]->SetTopColor(r, g, b);
+        }
+
+    }
+
+    RoundDial* rdMinutes = m_dials[INT(DIAL::MINUTES)];
+    if (rdMinutes)
+    {
+        rdMinutes->SetTimeValue(min);
+        if (rdHour->IsCurDivMajor())
+        {
+            //m_leds[INT(DIAL::MINUTES)]->SetTopColor(r, g, b);
+        }
     }
 }
 
-void RoundWatch::SetTime(const int16_t hour, const int16_t min, const int16_t sec)
+void RoundWatch::SetDisplayedTime(const uint8_t hour, const uint8_t min, const uint8_t sec)
 {
-    
+    RoundDial* rdHour = m_dials[INT(DIAL::HOURS)];
+    if (rdHour)
+    {
+        rdHour->SetTimeValue(hour);
+    }
+
+    RoundDial* rdMinutes = m_dials[INT(DIAL::MINUTES)];
+    if (rdMinutes)
+    {
+        rdMinutes->SetTimeValue(min);
+    }
 }
