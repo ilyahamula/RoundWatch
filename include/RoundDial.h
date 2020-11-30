@@ -31,6 +31,8 @@ public:
     virtual bool IsCurDivMajor() const = 0;
     virtual void Setup() = 0;
 
+    void SetDivisionsPin(const uint8_t pin);
+
 public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
@@ -49,6 +51,7 @@ protected:
     uint8_t m_numDivisions;
     uint16_t m_stepsPerDiv;
     uint8_t m_currDiv;
+    uint8_t m_divisionsPin;
 };
 
 class RoundDialHours : public RoundDial

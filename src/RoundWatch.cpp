@@ -35,6 +35,12 @@ void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t
         m_dials[INT(dial)] = RoundDial::CreateDial(dial, in1, in2, in3, in4);
 }
 
+void RoundWatch::SetDivisionsPin(const DIAL dial, const uint8_t pin)
+{
+    if (!m_dials[INT(dial)])
+        m_dials[INT(dial)]->SetDivisionsPin(pin);
+}
+
 void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)
 {
     if (!m_leds[INT(dial)])

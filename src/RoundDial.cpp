@@ -30,11 +30,17 @@ RoundDial::RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, co
     , m_numDivisions(NOT_DEFINED)
     , m_stepsPerDiv(NOT_DEFINED)
     , m_currDiv(0)
+    , m_divisionsPin(NOT_DEFINED)
 {
 }
 
 RoundDial::~RoundDial()
 {
+}
+
+void RoundDial::SetDivisionsPin(const uint8_t pin)
+{
+    m_divisionsPin = pin;
 }
 
 void RoundDial::MoveToNextDiv()

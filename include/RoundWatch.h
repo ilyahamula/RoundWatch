@@ -14,6 +14,7 @@ public:
 
     // Dial`s interface
     void SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    void SetDivisionsPin(const DIAL dial, const uint8_t pin);
 
     // LED`s interface
     void SetLedPin(const DIAL dial, const uint8_t pin);
