@@ -1,4 +1,5 @@
 #include "TimeLed.h"
+#include "Debug.h"
 
 #define LED_COUNT 9
 
@@ -40,7 +41,8 @@ void TimeLed::SetBottomColor(const uint8_t r, const uint8_t g, const uint8_t b)
 
 void TimeLed::Show()
 {
-
+  Debug::Print("TimeLed::Show()\n");
+  
   const auto topColor = strip.Color(m_topColor.red * m_topBrightness, 
                                     m_topColor.green * m_topBrightness, 
                                     m_topColor.blue * m_topBrightness);

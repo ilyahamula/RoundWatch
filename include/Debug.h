@@ -5,6 +5,8 @@
 
 #define DEBUG
 
+class DS1307;
+
 class Debug
 {
     Debug() = delete;
@@ -25,6 +27,10 @@ public:
         Serial.print(text);
 #endif
     }
+
+    static int minute;
+    static void PrintTime(DS1307& clock);
+    static void TestForLed(const uint16_t pin);
 };
 
 #endif
