@@ -41,6 +41,7 @@ RoundDial::~RoundDial()
 void RoundDial::SetDivisionsPin(const uint8_t pin)
 {
     m_divisionsPin = pin;
+    pinMode(m_divisionsPin, INPUT); // division button should be connected to HIGH level
 }
 
 void RoundDial::MoveToNextDiv()
