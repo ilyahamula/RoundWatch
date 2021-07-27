@@ -29,6 +29,22 @@ RoundWatch::~RoundWatch()
         delete m_leds[INT(DIAL::MINUTES)];
 }
 
+void RoundWatch::AdjustDialSettings(const DIAL dial, const Settings& settings)
+{
+    SetMottorPins(dial, settings.in1, settings.in2, settings.in3, settings.in4);
+    SetLedPin(dial, settings.ledPin);
+
+    SetBottomBrightness(dial, settings.bottomLED.brightness);
+    SetBottomColor(dial, settings.bottomLED.red,
+        settings.bottomLED.green,
+        settings.bottomLED.blue);
+
+    SetTopBrightness(dial, settings.topLED.brightness);
+    SetTopColor(dial, settings.topLED.red,
+        settings.topLED.green,
+        settings.topLED.blue);
+}
+
 void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
     if (!m_dials[INT(dial)])

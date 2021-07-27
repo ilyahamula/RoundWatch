@@ -14,20 +14,40 @@ DS1307 myClock;//define a object of DS1307 class
 
 void setup()
 {
-    watch.SetMottorPins(DIAL::HOURS, 12, 13, 14, 26);
-    watch.SetLedPin(DIAL::HOURS, 5);
-    watch.SetBottomBrightness(DIAL::HOURS, 1.0);
-    watch.SetBottomColor(DIAL::HOURS, 0, 0, 255);
-    watch.SetTopBrightness(DIAL::HOURS, 1.0);
-    watch.SetTopColor(DIAL::HOURS, 0, 0, 255);
+	RoundWatch::Settings settings;
+	settings.in1 = 12;
+	settings.in2 = 13;
+	settings.in3 = 14;
+	settings.in4 = 26;
+	settings.ledPin = 5;
+	//settings.divisionPin = 
+	settings.topLED.red = 0;
+	settings.topLED.green = 0;
+	settings.topLED.blue = 255;
+	settings.topLED.brightness = 1.0;
+	settings.bottomLED.red = 0;
+	settings.bottomLED.green = 255;
+	settings.bottomLED.blue = 0;
+	settings.bottomLED.brightness = 1.0;
 
-	watch.SetMottorPins(DIAL::MINUTES, 27, 33, 25, 35);
-    watch.SetLedPin(DIAL::MINUTES, 18);
-    watch.SetBottomBrightness(DIAL::MINUTES, 1.0);
-    watch.SetBottomColor(DIAL::MINUTES, 0, 255, 0);
-    watch.SetTopBrightness(DIAL::MINUTES, 1.0);
-    watch.SetTopColor(DIAL::MINUTES, 255, 0, 0);
+	watch.AdjustDialSettings(DIAL::HOURS, settings);
 
+	settings.in1 = 27;
+	settings.in2 = 33;
+	settings.in3 = 25;
+	settings.in4 = 35;
+	settings.ledPin = 18;
+	//settings.divisionPin = 
+	settings.topLED.red = 0;
+	settings.topLED.green = 0;
+	settings.topLED.blue = 255;
+	settings.topLED.brightness = 1.0;
+	settings.bottomLED.red = 0;
+	settings.bottomLED.green = 255;
+	settings.bottomLED.blue = 0;
+	settings.bottomLED.brightness = 1.0;
+
+	watch.AdjustDialSettings(DIAL::MINUTES, settings);
     watch.Setup();
 
     myClock.begin(21, 22);
