@@ -12,7 +12,7 @@
 RoundWatch watch; 
 DS1307 myClock;//define a object of DS1307 class
 
-void setup()
+void SetupHoursDial()
 {
 	RoundWatch::Settings settings;
 	settings.in1 = 12;
@@ -31,7 +31,11 @@ void setup()
 	settings.bottomLED.brightness = 1.0;
 
 	watch.AdjustDialSettings(DIAL::HOURS, settings);
+}
 
+void SetupMinutesDial()
+{
+	RoundWatch::Settings settings;
 	settings.in1 = 27;
 	settings.in2 = 33;
 	settings.in3 = 25;
@@ -48,6 +52,12 @@ void setup()
 	settings.bottomLED.brightness = 1.0;
 
 	watch.AdjustDialSettings(DIAL::MINUTES, settings);
+}
+
+void setup()
+{
+	SetupHoursDial();
+	SetupMinutesDial();
     watch.Setup();
 
     myClock.begin(21, 22);
