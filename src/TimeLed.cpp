@@ -4,7 +4,7 @@
 #define LED_COUNT 9
 
 TimeLed::TimeLed(const uint8_t pin)
-    : strip(LED_COUNT, pin, NEO_GRB + NEO_KHZ400)
+    : strip(LED_COUNT, pin, NEO_GRB + NEO_KHZ800)
     , m_topBrightness(0)
     , m_bottomBrightness(0)
     , m_topColor()
