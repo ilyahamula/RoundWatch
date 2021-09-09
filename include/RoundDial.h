@@ -19,6 +19,7 @@ enum class DIAL
 
 class RoundDial
 {
+    friend class Debug;
 public:
     static RoundDial* CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
 
@@ -40,6 +41,7 @@ public: // for calibration through WEB interface
     void SetActualDivision(const uint8_t value);
     
 protected:
+    void MoveStep(const bool forward = true);
     void MoveToNextDiv();
     void MoveToPrevDiv();
     virtual void SaveCurrDivToStorage() = 0;

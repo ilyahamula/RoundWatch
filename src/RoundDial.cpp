@@ -7,6 +7,10 @@
 #define EEPROM_SIZE 2
 #define HOURS_ADDRESS 0
 #define MIN_ADDRESS 1
+#define MIN_STEP 3
+#define USER_STEP 10
+
+//#define OLD_MOVE_DIVISION
 
 RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
@@ -40,14 +44,30 @@ RoundDial::~RoundDial()
 
 void RoundDial::SetDivisionsPin(const uint8_t pin)
 {
+    Debug::Print("\nSetDivisionsPin()");
     m_divisionsPin = pin;
     pinMode(m_divisionsPin, INPUT); // division button should be connected to HIGH level
+}
+
+void RoundDial::MoveStep(const bool forward)
+{
+#ifdef OLD_MOVE_DIVISION
+    const int stepsDirection = (forward ? m_stepsPerDiv : (-1 * m_stepsPerDiv));
+    m_stepperMotor.step(stepsDirection); // old realization
+#else
+    const int stepsDirection = (forward ? MIN_STEP : (-1 * MIN_STEP));
+    while(!digitalRead(m_divisionsPin))
+        m_stepperMotor.step(stepsDirection);
+
+    while(digitalRead(m_divisionsPin))
+        m_stepperMotor.step(stepsDirection);
+#endif
 }
 
 void RoundDial::MoveToNextDiv()
 {
     Debug::Print("\nMoveToNextDiv()");
-    m_stepperMotor.step(m_stepsPerDiv);
+    MoveStep();
     m_currDiv++;
     if (m_currDiv == m_numDivisions)
         m_currDiv = 0;
@@ -57,7 +77,7 @@ void RoundDial::MoveToNextDiv()
 void RoundDial::MoveToPrevDiv()
 {
     Debug::Print("\nMoveToPrevDiv()");
-    m_stepperMotor.step((-1 * m_stepsPerDiv));
+    MoveStep(false);
     m_currDiv--;
     if (m_currDiv < 0)
         m_currDiv = 0;
@@ -66,17 +86,17 @@ void RoundDial::MoveToPrevDiv()
 
 void RoundDial::MoveForward()
 {
-    m_stepperMotor.step(10);
+    m_stepperMotor.step(USER_STEP);
 }
 
 void RoundDial::MoveBackward()
 {
-    m_stepperMotor.step(-10);
+    m_stepperMotor.step(-1 * USER_STEP);
 }
 
 void RoundDial::MoveOneDivForward()
 {
-    m_stepperMotor.step(m_stepsPerDiv);
+    MoveStep();
 }
 
 void RoundDial::SetActualDivision(const uint8_t value)

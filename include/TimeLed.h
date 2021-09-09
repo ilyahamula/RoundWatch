@@ -13,6 +13,7 @@ public:
     void SetTopColor(const uint8_t r, const uint8_t g, const uint8_t b);
     void SetBottomColor(const uint8_t r, const uint8_t g, const uint8_t b);
     void Show();
+    void Off();
 
 private:
     struct sRGB

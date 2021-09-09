@@ -3,6 +3,11 @@
 #include <EEPROM.h>
 #include "DS1307.h"
 
+#define TEST_HOURS_DIAL Debug::TestForDialSystem(12, 13, 14, 26, 5, 16)
+#define TEST_MINUTES_DIAL Debug::TestForDialSystem(27, 33, 25, 35, 18, 17)
+#define TEST_HOURS_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::HOURS, 12, 13, 14, 26, 16)
+#define TEST_MINUTES_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::MINUTES, 27, 33, 25, 35, 17)
+
 #include "Debug.h"
 #include "RoundWatch.h"
 
@@ -20,7 +25,7 @@ void SetupHoursDial()
 	settings.in3 = 14;
 	settings.in4 = 26;
 	settings.ledPin = 5;
-	//settings.divisionPin = 
+	settings.divisionPin = 16;
 	settings.topLED.red = 0;
 	settings.topLED.green = 0;
 	settings.topLED.blue = 255;
@@ -41,7 +46,7 @@ void SetupMinutesDial()
 	settings.in3 = 25;
 	settings.in4 = 35;
 	settings.ledPin = 18;
-	//settings.divisionPin = 
+	settings.divisionPin = 17;
 	settings.topLED.red = 0;
 	settings.topLED.green = 0;
 	settings.topLED.blue = 255;
@@ -56,28 +61,28 @@ void SetupMinutesDial()
 
 void setup()
 {
+	Debug::Print("--------Setup()\n");
 	SetupHoursDial();
 	SetupMinutesDial();
     watch.Setup();
 
     myClock.begin(21, 22);
+	/*
     const uint8_t isSetup = EEPROM.read(IS_SETUP_CLOCK_ADDR);
 	if (isSetup != IS_SETTUP)
 	{
-		myClock.fillByYMD(2020,10,17);//Jan 19,2013
-		myClock.fillByHMS(17,11,00);//15:28 30"
-		myClock.fillDayOfWeek(SAT);//Saturday
+		Debug::Print("Setup clock!\n");
+
+		myClock.fillByYMD(2021, 9, 9);//Jan 19,2013
+		myClock.fillByHMS(0, 15, 0);//15:28 30"
+		myClock.fillDayOfWeek(THU);//Saturday
 		myClock.setTime();//write time to the RTC chip
 
 		EEPROM.write(IS_SETUP_CLOCK_ADDR, IS_SETTUP);
     	EEPROM.commit();
 	}
-	/*
-	myClock.fillByYMD(2020,10,17);//Jan 19,2013
-	myClock.fillByHMS(18,23,00);//15:28 30"
-	myClock.fillDayOfWeek(SAT);//Saturday
-	myClock.setTime();//write time to the RTC chip
 	*/
+	Debug::Print("--------end Setup()\n");                                                                         
 }
 
 void loop()
