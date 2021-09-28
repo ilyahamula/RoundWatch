@@ -7,7 +7,7 @@ Command& Command::Instance()
     return inst;
 }
 
-const Command::eConcreteCommand Command::GetCommand()
+const eConcreteCommand Command::GetCommand()
 {
     return eConcreteCommand::eNone;
     // TODO: ask Serial and WEBServer for available input and procced them
