@@ -7,7 +7,7 @@
 
 namespace
 {
-#define BOT_TOKEN "2001676253:AAEOBv89TyzE1NGuyS5RD-Dgz3Z6ozrc1eI"
+#define BOT_TOKEN ""
 
     void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
     {
