@@ -14,7 +14,7 @@ enum class eConcreteCommand
 class Command
 {
 private:
-    Command() = default;
+    Command();
     Command(const Command&) = delete;
     Command& operator=(const Command&) = delete;
 
@@ -22,6 +22,9 @@ public:
     Command& Instance();
 
     const eConcreteCommand GetCommand();
+
+private:
+    TaskHandle_t telegramBotTask;
 };
 
 #endif
