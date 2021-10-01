@@ -4,11 +4,10 @@
 
 #include "Debug.h"
 #include "Command.h"
+#include "Settings.h"
 
 namespace
 {
-#define BOT_TOKEN ""
-
     void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
     {
         Debug::Print("HandleNewMessages\n");

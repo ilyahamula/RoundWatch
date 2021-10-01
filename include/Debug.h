@@ -2,8 +2,13 @@
 #define  DEBUGHEADER_H
 
 #include <Arduino.h>
-
+#include "Settings.h"
 #define DEBUG
+
+#define TEST_HOURS_DIAL Debug::TestForDialSystem(HOURS_IN1, HOURS_IN2, HOURS_IN3, HOURS_IN4, HOURS_LED, HOURS_DIV)
+#define TEST_MINUTES_DIAL Debug::TestForDialSystem(MINUTES_IN1, MINUTES_IN2, MINUTES_IN3, MINUTES_IN4, MINUTES_LED, MINUTES_DIV)
+#define TEST_HOURS_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::HOURS, HOURS_IN1, HOURS_IN2, HOURS_IN3, HOURS_IN4, HOURS_DIV)
+#define TEST_MINUTES_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::MINUTES, MINUTES_IN1, MINUTES_IN2, MINUTES_IN3, MINUTES_IN4, MINUTES_DIV)
 
 class DS1307;
 enum class DIAL;
@@ -23,7 +28,7 @@ public:
         if (!m_serialSetup)
         {
             Serial.begin(9600);
-            delay(1000);
+            delay(300);
             m_serialSetup = true;
         }
         Serial.print(text);
