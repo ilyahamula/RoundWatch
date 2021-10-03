@@ -8,23 +8,28 @@ enum class eConcreteCommand
     eMoveBackwardHour,
     eMoveForwardMin,
     eMoveBackwardMin,
-    eSetTime
+    eMoveFrwdStepHour,
+    eMoveFrwdStepMin,
+    eIncorrectTime,
 };
 
 class Command
 {
+    friend void SetCommand(const eConcreteCommand command);
+    
 private:
     Command();
     Command(const Command&) = delete;
     Command& operator=(const Command&) = delete;
 
 public:
-    Command& Instance();
-
+    static Command& Instance();
     const eConcreteCommand GetCommand();
 
 private:
     TaskHandle_t telegramBotTask;
+    TaskHandle_t serialTask;
+    eConcreteCommand m_currCmd;
 };
 
 #endif

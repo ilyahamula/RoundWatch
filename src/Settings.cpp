@@ -47,19 +47,26 @@ void SetupMinutesDial(RoundWatch& watch)
 	watch.AdjustDialSettings(DIAL::MINUTES, settings);
 }
 
-void SetupRTC(DS1307& myClock)
+void SetupWatch(RoundWatch& watch)
 {
-    //myClock.begin(21, 22);
+    SetupHoursDial(watch);
+	SetupMinutesDial(watch);
+    watch.Setup();
+}
+
+void SetupRTC(DS1307& clock)
+{
+    //clock.begin(21, 22);
 
     // const uint8_t isSetup = EEPROM.read(IS_SETUP_CLOCK_ADDR);
 	// if (isSetup != IS_SETTUP)
 	// {
 	// 	Debug::Print("Setup clock!\n");
 
-	// 	myClock.fillByYMD(2021, 9, 9);//Jan 19,2013
-	// 	myClock.fillByHMS(0, 15, 0);//15:28 30"
-	// 	myClock.fillDayOfWeek(THU);//Saturday
-	// 	myClock.setTime();//write time to the RTC chip
+	// 	clock.fillByYMD(2021, 9, 9);//Jan 19,2013
+	// 	clock.fillByHMS(0, 15, 0);//15:28 30"
+	// 	clock.fillDayOfWeek(THU);//Saturday
+	// 	clock.setTime();//write time to the RTC chip
 
 	// 	EEPROM.write(IS_SETUP_CLOCK_ADDR, IS_SETTUP);
     // 	EEPROM.commit();

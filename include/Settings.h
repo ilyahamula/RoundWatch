@@ -18,15 +18,18 @@
 #define MINUTES_LED 18
 #define MINUTES_DIV 17
 
+#define ESP32_SDA 21
+#define ESP32_SCL 22
+
 #define BOT_TOKEN ""
 #define SSID ""
 #define PASSWORD ""
+#define CHAT_ID ""
 
 class RoundWatch;
 class DS1307;
 
-void SetupHoursDial(RoundWatch& watch);
-void SetupMinutesDial(RoundWatch& watch);
-void SetupRTC(DS1307& myClock);
+void SetupWatch(RoundWatch& watch);
+void SetupRTC(DS1307& clock);
 
 #endif

@@ -6,6 +6,11 @@
 #include "Command.h"
 #include "Settings.h"
 
+void SetCommand(const eConcreteCommand command)
+{
+    Command::Instance().m_currCmd = command;
+}
+
 namespace
 {
     void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
@@ -29,9 +34,10 @@ namespace
 
             String from_name = bot.messages[i].from_name;
 
-            if (text == "/start") {
+            if (text == "/start") 
+            {
               String welcome = "Welcome, " + from_name + ".\n";
-              welcome += "Use the following commands to control your outputs.\n\n";
+              welcome += "Use the following commands to control RoundWatch.\n\n";
               welcome += "/led_on to turn GPIO ON \n";
               welcome += "/led_off to turn GPIO OFF \n";
               welcome += "/state to request current GPIO state \n";
@@ -43,7 +49,7 @@ namespace
             }
 
         }
-  }
+    }
 
     void RunTelegramBot(void* parametrs)
     {
@@ -62,7 +68,7 @@ namespace
 
                 while(numNewMessages) 
                 {
-                    Debug::Print("got response");
+                    Debug::Print("got response\n");
                     HandleNewMessages(numNewMessages, bot);
                     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
                 }
@@ -70,9 +76,36 @@ namespace
             }
         }
     }
+
+    void RunSerial(void* parameters)
+    {
+        if (Serial.available() > 0)
+	    {
+	    	const uint8_t byte = Serial.read();
+	    	Serial.println(byte);
+
+	    	if (byte == 49) // 1
+	    		SetCommand(eConcreteCommand::eMoveForwardHour);
+	    	else if (byte == 50) // 2
+	    		SetCommand(eConcreteCommand::eMoveBackwardHour);
+	    	else if (byte == 51) //3
+	    		SetCommand(eConcreteCommand::eMoveForwardMin);
+	    	else if (byte == 52) // 4
+	    		SetCommand(eConcreteCommand::eMoveBackwardMin);
+	    	else if (byte == 53) // 5
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);//watch.MoveOneDivForward(DIAL::HOURS);
+	    	else if (byte == 54) // 6
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);//watch.MoveOneDivForward(DIAL::MINUTES);
+
+	    	Serial.flush();
+	    }
+    }
 }
 
 Command::Command()
+    : telegramBotTask()
+    , serialTask()
+    , m_currCmd(eConcreteCommand::eNone)
 {
     xTaskCreatePinnedToCore(
                     RunTelegramBot,   /* Task function. */
@@ -83,6 +116,15 @@ Command::Command()
                     &telegramBotTask,      /* Task handle to keep track of created task */
                     0);          /* pin task to core 0 */                  
     delay(500); 
+    xTaskCreatePinnedToCore(
+                    RunSerial,   /* Task function. */
+                    "Serial port",     /* name of task. */
+                    10000,       /* Stack size of task */
+                    NULL,        /* parameter of the task */
+                    1,           /* priority of the task */
+                    &serialTask,      /* Task handle to keep track of created task */
+                    0);          /* pin task to core 0 */ 
+    delay(500);
 }
 
 Command& Command::Instance()
@@ -93,6 +135,7 @@ Command& Command::Instance()
 
 const eConcreteCommand Command::GetCommand()
 {
-    return eConcreteCommand::eNone;
-    // TODO: ask Serial and WEBServer for available input and procced them
+    eConcreteCommand tempCmd = m_currCmd;
+    m_currCmd = eConcreteCommand::eNone;
+    return tempCmd;
 }

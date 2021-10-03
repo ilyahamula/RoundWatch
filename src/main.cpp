@@ -4,6 +4,7 @@
 
 #include "Debug.h"
 #include "Settings.h"
+#include "Command.h"
 #include "RoundWatch.h"
 
 RoundWatch watch; 
@@ -12,39 +13,27 @@ DS1307 myClock;
 void setup()
 {
 	Debug::Print("--------Setup()\n");
-	SetupHoursDial(watch);
-	SetupMinutesDial(watch);
-    watch.Setup();
-
+	SetupWatch(watch);
 	Debug::Print("--------end Setup()\n");                                                                         
 }
 
 void loop()
 {
-	if (Serial.available() > 0)
-	{
-		const uint8_t byte = Serial.read();
-		Serial.println(byte);
-
-		if (byte == 49) // 1
-			watch.MoveForward(DIAL::HOURS);
-		else if (byte == 50) // 2
-			watch.MoveBackward(DIAL::HOURS);
-		else if (byte == 51) //3
-			watch.MoveForward(DIAL::MINUTES);
-		else if (byte == 52) // 4
-			watch.MoveBackward(DIAL::MINUTES);
-
-		else if (byte == 53) // 5
-			watch.MoveOneDivForward(DIAL::HOURS);
-		else if (byte == 54) // 6
-			watch.MoveOneDivForward(DIAL::MINUTES);
-
-		Serial.flush();
-	}
+	const auto cmd = Command::Instance().GetCommand();
+	if (cmd == eConcreteCommand::eMoveForwardHour)
+		watch.MoveForward(DIAL::HOURS);
+	else if (cmd == eConcreteCommand::eMoveBackwardHour)
+		watch.MoveBackward(DIAL::HOURS);
+	else if (cmd == eConcreteCommand::eMoveForwardMin)
+		watch.MoveForward(DIAL::MINUTES);
+	else if (cmd == eConcreteCommand::eMoveBackwardMin)
+		watch.MoveBackward(DIAL::MINUTES);
+	else if (cmd == eConcreteCommand::eMoveFrwdStepHour)
+		watch.MoveOneDivForward(DIAL::HOURS);
+	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
+		watch.MoveOneDivForward(DIAL::MINUTES);
 
     Debug::PrintTime(myClock);
-
 	myClock.getTime();
 	watch.SetRealTime(myClock.hour, myClock.minute);
 }
