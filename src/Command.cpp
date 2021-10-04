@@ -36,17 +36,35 @@ namespace
 
             if (text == "/start") 
             {
-              String welcome = "Welcome, " + from_name + ".\n";
-              welcome += "Use the following commands to control RoundWatch.\n\n";
-              welcome += "/led_on to turn GPIO ON \n";
-              welcome += "/led_off to turn GPIO OFF \n";
-              welcome += "/state to request current GPIO state \n";
-              bot.sendMessage(chat_id, welcome, "");
+                String welcome = "Welcome, " + from_name + ".\n";
+                welcome += "Use the following commands to control RoundWatch.\n\n";
+                welcome += MV_FRWD_HOURS;
+                welcome += "  to move forward hours dial \n";
+                welcome += MV_BKWD_HOURS;
+                welcome += "  to move backward hours dial \n";
+                welcome += MV_FRWD_MIN;
+                welcome += "  to move forward minutes dial \n";
+                welcome += MV_BKWD_MIN;
+                welcome += "  to move backward minutes dial \n";
+                welcome += MV_FRWD_STEP_HOURS;
+                welcome += "  to move one step forward hours dial \n";
+                welcome += MV_FRWD_STEP_MIN;
+                welcome += "  to move one step forward minutes dial \n";
+                bot.sendMessage(chat_id, welcome, "");
             }
 
-            if (text == "/led_on")
-            {
-            }
+            if (text == MV_FRWD_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveForwardHour);
+	    	else if (text == MV_BKWD_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveBackwardHour);
+	    	else if (text == MV_FRWD_MIN)
+	    		SetCommand(eConcreteCommand::eMoveForwardMin);
+	    	else if (text == MV_BKWD_MIN)
+	    		SetCommand(eConcreteCommand::eMoveBackwardMin);
+	    	else if (text == MV_FRWD_STEP_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
+	    	else if (text == MV_FRWD_STEP_MIN)
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
 
         }
     }
@@ -93,9 +111,9 @@ namespace
 	    	else if (byte == 52) // 4
 	    		SetCommand(eConcreteCommand::eMoveBackwardMin);
 	    	else if (byte == 53) // 5
-	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);//watch.MoveOneDivForward(DIAL::HOURS);
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
 	    	else if (byte == 54) // 6
-	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);//watch.MoveOneDivForward(DIAL::MINUTES);
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
 
 	    	Serial.flush();
 	    }
