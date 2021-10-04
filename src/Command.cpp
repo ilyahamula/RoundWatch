@@ -92,31 +92,36 @@ namespace
                 }
                 lastTimeBotRan = millis();
             }
+            vTaskDelay(10);
         }
     }
 
     void RunSerial(void* parameters)
     {
-        if (Serial.available() > 0)
-	    {
-	    	const uint8_t byte = Serial.read();
-	    	Serial.println(byte);
+        while(true)
+        {
+            if (Serial.available() > 0)
+	        {
+	        	const uint8_t byte = Serial.read();
+	        	Serial.println(byte);
 
-	    	if (byte == 49) // 1
-	    		SetCommand(eConcreteCommand::eMoveForwardHour);
-	    	else if (byte == 50) // 2
-	    		SetCommand(eConcreteCommand::eMoveBackwardHour);
-	    	else if (byte == 51) //3
-	    		SetCommand(eConcreteCommand::eMoveForwardMin);
-	    	else if (byte == 52) // 4
-	    		SetCommand(eConcreteCommand::eMoveBackwardMin);
-	    	else if (byte == 53) // 5
-	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
-	    	else if (byte == 54) // 6
-	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
+	        	if (byte == 49) // 1
+	        		SetCommand(eConcreteCommand::eMoveForwardHour);
+	        	else if (byte == 50) // 2
+	        		SetCommand(eConcreteCommand::eMoveBackwardHour);
+	        	else if (byte == 51) //3
+	        		SetCommand(eConcreteCommand::eMoveForwardMin);
+	        	else if (byte == 52) // 4
+	        		SetCommand(eConcreteCommand::eMoveBackwardMin);
+	        	else if (byte == 53) // 5
+	        		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
+	        	else if (byte == 54) // 6
+	        		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
 
-	    	Serial.flush();
-	    }
+	        	Serial.flush();
+	        }
+            vTaskDelay(10);
+        }
     }
 }
 
@@ -133,7 +138,7 @@ Command::Command()
                     1,           /* priority of the task */
                     &telegramBotTask,      /* Task handle to keep track of created task */
                     0);          /* pin task to core 0 */                  
-    delay(500); 
+    
     xTaskCreatePinnedToCore(
                     RunSerial,   /* Task function. */
                     "Serial port",     /* name of task. */
@@ -142,7 +147,7 @@ Command::Command()
                     1,           /* priority of the task */
                     &serialTask,      /* Task handle to keep track of created task */
                     0);          /* pin task to core 0 */ 
-    delay(500);
+    
 }
 
 Command& Command::Instance()

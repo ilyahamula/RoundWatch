@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include <WiFi.h>
 #include "DS1307.h"
 
 #include "Debug.h"
@@ -13,6 +14,14 @@ DS1307 myClock;
 void setup()
 {
 	Debug::Print("--------Setup()\n");
+	WiFi.mode(WIFI_STA);
+  	WiFi.begin(SSID, PASSWORD);
+ 
+  	while (WiFi.status() != WL_CONNECTED) 
+	  {
+    	delay(1000);
+    	Debug::Print("Connecting to WiFi..\n");
+  	}
 	SetupWatch(watch);
 	Debug::Print("--------end Setup()\n");                                                                         
 }
@@ -33,7 +42,7 @@ void loop()
 	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
 		watch.MoveOneDivForward(DIAL::MINUTES);
 
-    Debug::PrintTime(myClock);
+    //Debug::PrintTime(myClock);
 	myClock.getTime();
 	watch.SetRealTime(myClock.hour, myClock.minute);
 }
