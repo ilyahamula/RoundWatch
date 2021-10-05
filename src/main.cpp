@@ -1,7 +1,5 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include <WiFi.h>
-#include "DS1307.h"
 
 #include "Debug.h"
 #include "Settings.h"
@@ -9,7 +7,6 @@
 #include "RoundWatch.h"
 
 RoundWatch watch; 
-DS1307 myClock;
 
 void setup()
 {
@@ -42,7 +39,5 @@ void loop()
 	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
 		watch.MoveOneDivForward(DIAL::MINUTES);
 
-    //Debug::PrintTime(myClock);
-	myClock.getTime();
-	watch.SetRealTime(myClock.hour, myClock.minute);
+	//watch.SetRealTime(myClock.hour, myClock.minute);
 }
