@@ -38,9 +38,7 @@
 #define MV_FRWD_STEP_MIN "/mv_frwd_step_min"
 
 class RoundWatch;
-class DS1307;
 
 void SetupWatch(RoundWatch& watch);
-void SetupRTC(DS1307& clock);
 
 #endif
