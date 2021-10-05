@@ -27,8 +27,9 @@ public:
     const eConcreteCommand GetCommand();
 
 private:
-    TaskHandle_t telegramBotTask;
-    TaskHandle_t serialTask;
+    TaskHandle_t m_telegramBotTask;
+    TaskHandle_t m_serialTask;
+    TaskHandle_t m_bluetoothTask;
     eConcreteCommand m_currCmd;
 };
 
