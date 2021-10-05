@@ -38,6 +38,14 @@ void loop()
 		watch.MoveOneDivForward(DIAL::HOURS);
 	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
 		watch.MoveOneDivForward(DIAL::MINUTES);
+	else if (cmd == eConcreteCommand::eIncorrectTime)
+	{
+		int hours = -1;
+		int min = -1;
+		Command::Instance().GetIncorrectTime(hours, min);
+		if (hours != -1 && min != -1)
+			watch.CalibrateByIncorrectTime(hours, min);
+	}
 
 	//watch.SetRealTime(myClock.hour, myClock.minute);
 }

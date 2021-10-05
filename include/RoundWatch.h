@@ -47,6 +47,7 @@ public:
     void MoveForward(const DIAL dial);
     void MoveBackward(const DIAL dial);
     void MoveOneDivForward(const DIAL dial);
+    void CalibrateByIncorrectTime(const int hours, const int min);
 
 private:
     // Dial`s interface

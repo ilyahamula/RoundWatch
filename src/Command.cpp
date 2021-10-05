@@ -13,17 +13,30 @@ void SetCommand(const eConcreteCommand command)
     Debug::Print("command setted\n");
 }
 
+void SetIncorrrectTime(const int hours, const int min)
+{
+    Command::Instance().m_hours = hours;
+    Command::Instance().m_min = min;
+    Debug::Print("incorrect time setted\n");
+}
+
 namespace
 {
+    bool ParseTime(const String& text, int& hours, int& min)
+    {
+        return false;
+    }
+
     void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
     {
         Debug::Print("HandleNewMessages\n");
         Debug::Print(String(numNewMessages));
 
+        bool isIncorrectTimeMode = false;
         for (int i = 0; i < numNewMessages; i++) 
         {
             // Chat id of the requester
-            String chat_id = String(bot.messages[i].chat_id);
+            const String& chat_id = bot.messages[i].chat_id;
             // if (chat_id != CHAT_ID)
             // {
             //     bot.sendMessage(chat_id, "Unauthorized user", "");
@@ -31,14 +44,22 @@ namespace
             // }
     
             // Print the received message
-            String text = bot.messages[i].text;
+            const String& text = bot.messages[i].text;
             Debug::Print(text + "\n");
-
-            String from_name = bot.messages[i].from_name;
-
-            if (text == "/start") 
+            if (isIncorrectTimeMode)
             {
-                String welcome = "Welcome, " + from_name + ".\n";
+                int hours = -1;
+                int min = -1;
+                if (ParseTime(text, hours, min))
+                {
+                    SetIncorrrectTime(hours, min);
+                    SetCommand(eConcreteCommand::eIncorrectTime);
+                    isIncorrectTimeMode = false;
+                }
+            }
+            else if (text == "/start")
+            {
+                String welcome = "Welcome, " + bot.messages[i].from_name + ".\n";
                 welcome += "Use the following commands to control RoundWatch.\n\n";
                 welcome += MV_FRWD_HOURS;
                 welcome += "  to move forward hours dial \n";
@@ -52,10 +73,11 @@ namespace
                 welcome += "  to move one step forward hours dial \n";
                 welcome += MV_FRWD_STEP_MIN;
                 welcome += "  to move one step forward minutes dial \n";
+                welcome += INCORRECT_TIME;
+                welcome += "  to tell watch that time is incorrect \n";
                 bot.sendMessage(chat_id, welcome, "");
             }
-
-            if (text == MV_FRWD_HOURS)
+            else if (text == MV_FRWD_HOURS)
 	    		SetCommand(eConcreteCommand::eMoveForwardHour);
 	    	else if (text == MV_BKWD_HOURS)
 	    		SetCommand(eConcreteCommand::eMoveBackwardHour);
@@ -67,7 +89,12 @@ namespace
 	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
 	    	else if (text == MV_FRWD_STEP_MIN)
 	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
-
+            else if (text == INCORRECT_TIME)
+            {
+                String msg = "print time in format hh:mm";
+                bot.sendMessage(chat_id, msg, "");
+                isIncorrectTimeMode = true;
+            }
         }
     }
 
@@ -166,6 +193,8 @@ Command::Command()
     , m_serialTask()
     , m_bluetoothTask()
     , m_currCmd(eConcreteCommand::eNone)
+    , m_hours(-1)
+    , m_min(-1)
 {
     xTaskCreatePinnedToCore(
                     RunTelegramBot,   /* Task function. */
@@ -206,4 +235,13 @@ const eConcreteCommand Command::GetCommand()
     eConcreteCommand tempCmd = m_currCmd;
     m_currCmd = eConcreteCommand::eNone;
     return tempCmd;
+}
+
+void Command::GetIncorrectTime(int& hours, int& min)
+{
+    hours = m_hours;
+    min = m_min;
+
+    m_hours = -1;
+    m_min = -1;
 }
