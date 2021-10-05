@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <WiFiClientSecure.h>
 #include <UniversalTelegramBot.h>
-#include <BluetoothSerial.h>
+//#include <BluetoothSerial.h>
 
 #include "Debug.h"
 #include "Command.h"
@@ -10,6 +10,7 @@
 void SetCommand(const eConcreteCommand command)
 {
     Command::Instance().m_currCmd = command;
+    Debug::Print("command setted\n");
 }
 
 namespace
@@ -127,37 +128,37 @@ namespace
     }
 #endif
 
-    void RunBluetooth(void* parameters)
-    {
-        BluetoothSerial SerialBT;
-        if (!SerialBT.begin("RoundWatch"))
-            Debug::Print("Bluetooth is not working!");
+    // void RunBluetooth(void* parameters)
+    // {
+    //     BluetoothSerial SerialBT;
+    //     if (!SerialBT.begin("RoundWatch"))
+    //         Debug::Print("Bluetooth is not working!");
 
-        while(true)
-        {
-            if (SerialBT.available() > 0)
-	        {
-	        	const uint8_t byte = SerialBT.read();
-	        	Serial.println(byte);
+    //     while(true)
+    //     {
+    //         if (SerialBT.available() > 0)
+	//         {
+	//         	const uint8_t byte = SerialBT.read();
+	//         	Serial.println(byte);
 
-	        	if (byte == 49) // 1
-	        		SetCommand(eConcreteCommand::eMoveForwardHour);
-	        	else if (byte == 50) // 2
-	        		SetCommand(eConcreteCommand::eMoveBackwardHour);
-	        	else if (byte == 51) //3
-	        		SetCommand(eConcreteCommand::eMoveForwardMin);
-	        	else if (byte == 52) // 4
-	        		SetCommand(eConcreteCommand::eMoveBackwardMin);
-	        	else if (byte == 53) // 5
-	        		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
-	        	else if (byte == 54) // 6
-	        		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
+	//         	if (byte == 49) // 1
+	//         		SetCommand(eConcreteCommand::eMoveForwardHour);
+	//         	else if (byte == 50) // 2
+	//         		SetCommand(eConcreteCommand::eMoveBackwardHour);
+	//         	else if (byte == 51) //3
+	//         		SetCommand(eConcreteCommand::eMoveForwardMin);
+	//         	else if (byte == 52) // 4
+	//         		SetCommand(eConcreteCommand::eMoveBackwardMin);
+	//         	else if (byte == 53) // 5
+	//         		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
+	//         	else if (byte == 54) // 6
+	//         		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
 
-	        	Serial.flush();
-	        }
-            vTaskDelay(10);
-        }
-    }
+	//         	Serial.flush();
+	//         }
+    //         vTaskDelay(10);
+    //     }
+    // }
 }
 
 Command::Command()
@@ -184,14 +185,14 @@ Command::Command()
                     &m_serialTask,      /* Task handle to keep track of created task */
                     0);          /* pin task to core 0 */ 
 #endif
-    xTaskCreatePinnedToCore(
-                    RunBluetooth,   /* Task function. */
-                    "Bluetooth",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &m_bluetoothTask,      /* Task handle to keep track of created task */
-                    0);          /* pin task to core 0 */ 
+    // xTaskCreatePinnedToCore(
+    //                 RunBluetooth,   /* Task function. */
+    //                 "Bluetooth",     /* name of task. */
+    //                 10000,       /* Stack size of task */
+    //                 NULL,        /* parameter of the task */
+    //                 1,           /* priority of the task */
+    //                 &m_bluetoothTask,      /* Task handle to keep track of created task */
+    //                 0);          /* pin task to core 0 */ 
 }
 
 Command& Command::Instance()
