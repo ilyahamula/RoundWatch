@@ -56,6 +56,11 @@ namespace
                     SetCommand(eConcreteCommand::eIncorrectTime);
                     isIncorrectTimeMode = false;
                 }
+                else
+                {
+                    String msg = "Incorrect timeformat! Print time in format hh:mm";
+                    bot.sendMessage(chat_id, msg, "");
+                }
             }
             else if (text == "/start")
             {
