@@ -110,6 +110,11 @@ void RoundWatch::MoveOneDivForward(const DIAL dial)
         dl->MoveOneDivForward();
 }
 
+void RoundWatch::CalibrateByIncorrectTime(const int hours, const int min)
+{
+    // TODO: implement
+}
+
 void RoundWatch::Setup()
 {
     for (uint8_t i = 0; i < INT(DIAL::NUM_DIALS); ++i)
