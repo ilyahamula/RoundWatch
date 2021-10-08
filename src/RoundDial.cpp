@@ -12,6 +12,28 @@
 
 //#define OLD_MOVE_DIVISION
 
+namespace
+{
+    int8_t DivisionsShortestDist(const int8_t real, const int8_t shown)
+    {
+        if (real > shown)
+        {
+            const int16_t diff = real - shown;
+            if (diff > 12)
+                return (24 - diff) * -1;
+            return diff;
+        }
+        else if (real < shown)
+        {
+            const int16_t diff = (real - shown) * -1;
+            if (diff < -12)
+                return (24 + diff);
+            return diff;
+        }
+        return 0;
+    }
+}
+
 RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
 {
     static bool isFlashInit = false;
@@ -84,6 +106,20 @@ void RoundDial::MoveToPrevDiv()
     SaveCurrDivToStorage();
 }
 
+void RoundDial::MoveByDifferense(const int8_t diff)
+{
+    if (diff > 0)
+    {
+        for (int8_t i = diff; i > 0; --i)
+            MoveStep();
+    }
+    else if (diff < 0)
+    {
+        for (int8_t i = diff; i < 0; ++i)
+            MoveStep(false);
+    }
+}
+
 void RoundDial::MoveForward()
 {
     m_stepperMotor.step(USER_STEP);
@@ -97,11 +133,6 @@ void RoundDial::MoveBackward()
 void RoundDial::MoveOneDivForward()
 {
     MoveStep();
-}
-
-void RoundDial::SetActualDivision(const uint8_t value)
-{
-    m_currDiv = value;
 }
 
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
@@ -160,6 +191,16 @@ void RoundDialHours::SaveCurrDivToStorage()
     EEPROM.commit();
     Debug::Print("\n(Hours) saved actual division: ");
     Debug::Print(m_currDiv);
+}
+
+void RoundDialHours::CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime)
+{
+    const int8_t diff = DivisionsShortestDist(realTime, shownTime);
+    Debug::Print("HOURS DIAL: CalibrateByIncorrectTime(), diff in div = ");
+    Debug::Print(diff);
+    Debug::Print("\n");
+
+    MoveByDifferense(diff);
 }
 
 //--------------------Dial of Minutes-------------------------------------------------------------------------------------------------------
@@ -229,3 +270,15 @@ void RoundDialMinutes::SaveCurrDivToStorage()
     Debug::Print(m_currDiv);
 }
 
+void RoundDialMinutes::CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime)
+{
+    const int8_t realDiv = m_minToDiv[realTime];
+    const int8_t shownDiv = m_minToDiv[shownTime];
+
+    const int8_t diff = DivisionsShortestDist(realDiv, shownDiv);
+    Debug::Print("MINUTES DIAL: CalibrateByIncorrectTime(), diff in div = ");
+    Debug::Print(diff);
+    Debug::Print("\n");
+
+    MoveByDifferense(diff);
+}

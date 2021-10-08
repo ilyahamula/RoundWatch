@@ -13,26 +13,56 @@ void SetCommand(const eConcreteCommand command)
     Debug::Print("command setted\n");
 }
 
-void SetIncorrrectTime(const int hours, const int min)
+void SetIncorrrectTime(const uint8_t hours, const uint8_t min)
 {
     Command::Instance().m_hours = hours;
     Command::Instance().m_min = min;
-    Debug::Print("incorrect time setted\n");
+    Debug::Print("\nincorrect time setted\n");
 }
 
 namespace
 {
-    bool ParseTime(const String& text, int& hours, int& min)
+    bool ParseTime(const String& text, uint8_t& hours, uint8_t& min)
     {
-        return false;
+        const int pos = text.indexOf(':');
+        if (pos == -1)
+            return false;
+
+        const String hoursStr = text.substring(0, pos);
+        const String minutesStr = text.substring(pos + 1);
+        Debug::Print("\nparse hr:" );
+        Debug::Print(hoursStr);
+        Debug::Print("\nparse min:" );
+        Debug::Print(minutesStr);
+
+        auto isNumber = [](const String& str) -> bool
+        {
+            for (const auto ch : str)
+                if (!isDigit(ch))
+                    return false;
+            return true;
+        };
+
+        if (!isNumber(hoursStr) || !isNumber(minutesStr))
+            return false;
+        
+        int hoursLocal = hoursStr.toInt();
+        int minLocal = minutesStr.toInt();
+
+        if (hoursLocal > 23 || hoursLocal < 0 ||
+            minLocal > 59 || minLocal < 0)
+            return false;
+        hours = hoursLocal;
+        min = minLocal; 
+        return true;
     }
 
-    void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
+    void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot, bool& isIncorrectTimeMode) 
     {
-        Debug::Print("HandleNewMessages\n");
+        Debug::Print("\nHandleNewMessages ");
         Debug::Print(String(numNewMessages));
+        Debug::Print("\n");
 
-        bool isIncorrectTimeMode = false;
         for (int i = 0; i < numNewMessages; i++) 
         {
             // Chat id of the requester
@@ -48,8 +78,9 @@ namespace
             Debug::Print(text + "\n");
             if (isIncorrectTimeMode)
             {
-                int hours = -1;
-                int min = -1;
+                Debug::Print("\nIncorrect time flag\n");
+                uint8_t hours = -1;
+                uint8_t min = -1;
                 if (ParseTime(text, hours, min))
                 {
                     SetIncorrrectTime(hours, min);
@@ -111,6 +142,7 @@ namespace
 
         int botRequestDelay = 1000;
         unsigned long lastTimeBotRan = 0;
+        bool isIncorrectTimeMode = false;
 
         while (true)
         {
@@ -121,7 +153,7 @@ namespace
                 while(numNewMessages) 
                 {
                     Debug::Print("got response\n");
-                    HandleNewMessages(numNewMessages, bot);
+                    HandleNewMessages(numNewMessages, bot, isIncorrectTimeMode);
                     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
                 }
                 lastTimeBotRan = millis();
@@ -242,7 +274,7 @@ const eConcreteCommand Command::GetCommand()
     return tempCmd;
 }
 
-void Command::GetIncorrectTime(int& hours, int& min)
+void Command::GetIncorrectTime(uint8_t& hours, uint8_t& min)
 {
     hours = m_hours;
     min = m_min;

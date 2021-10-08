@@ -1,15 +1,15 @@
 #include "RoundWatch.h"
 #include "Debug.h"
 
-#define NOT_DEFINED 0
+#define NOT_DEFINED -1
 
 RoundWatch::RoundWatch()
     : m_dials()
     , m_leds()
     , m_timeValue()
 {
-    m_timeValue[INT(DIAL::HOURS)] = 0;
-    m_timeValue[INT(DIAL::MINUTES)] = 0;
+    m_timeValue[INT(DIAL::HOURS)] = NOT_DEFINED;
+    m_timeValue[INT(DIAL::MINUTES)] = NOT_DEFINED;
 
     m_dials[INT(DIAL::HOURS)] = nullptr;
     m_dials[INT(DIAL::MINUTES)] = nullptr;
@@ -110,9 +110,18 @@ void RoundWatch::MoveOneDivForward(const DIAL dial)
         dl->MoveOneDivForward();
 }
 
-void RoundWatch::CalibrateByIncorrectTime(const int hours, const int min)
+void RoundWatch::CalibrateByIncorrectTime(const uint8_t hours, const uint8_t min)
 {
-    // TODO: implement
+    Debug::Print("\nRoundWatch::CalibrateByIncorrectTime\n");
+    RoundDial* hoursDl = m_dials[INT(DIAL::HOURS)];
+    RoundDial* minDl = m_dials[INT(DIAL::MINUTES)];
+    if (!(hoursDl && minDl) || 
+        m_timeValue[INT(DIAL::HOURS)] == NOT_DEFINED ||
+        m_timeValue[INT(DIAL::MINUTES)] == NOT_DEFINED)
+        return;
+    
+    hoursDl->CalibrateByIncorrectTime(m_timeValue[INT(DIAL::HOURS)], hours);
+    minDl->CalibrateByIncorrectTime(m_timeValue[INT(DIAL::MINUTES)], min);
 }
 
 void RoundWatch::Setup()
@@ -141,7 +150,7 @@ void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_
         {
             //m_leds[INT(DIAL::HOURS)]->SetTopColor(r, g, b);
         }
-
+        m_timeValue[INT(DIAL::HOURS)] = hour;
     }
 
     RoundDial* rdMinutes = m_dials[INT(DIAL::MINUTES)];
@@ -152,6 +161,7 @@ void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_
         {
             //m_leds[INT(DIAL::MINUTES)]->SetTopColor(r, g, b);
         }
+        m_timeValue[INT(DIAL::MINUTES)] = min;
     }
 }
 

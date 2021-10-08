@@ -40,8 +40,8 @@ void loop()
 		watch.MoveOneDivForward(DIAL::MINUTES);
 	else if (cmd == eConcreteCommand::eIncorrectTime)
 	{
-		int hours = -1;
-		int min = -1;
+		uint8_t hours = -1;
+		uint8_t min = -1;
 		Command::Instance().GetIncorrectTime(hours, min);
 		if (hours != -1 && min != -1)
 			watch.CalibrateByIncorrectTime(hours, min);

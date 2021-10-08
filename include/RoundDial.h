@@ -31,6 +31,7 @@ public:
     virtual void SetTimeValue(const uint8_t value) = 0;
     virtual bool IsCurDivMajor() const = 0;
     virtual void Setup() = 0;
+    virtual void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) = 0;
 
     void SetDivisionsPin(const uint8_t pin);
 
@@ -38,12 +39,12 @@ public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
     void MoveOneDivForward();
-    void SetActualDivision(const uint8_t value);
     
 protected:
     void MoveStep(const bool forward = true);
     void MoveToNextDiv();
     void MoveToPrevDiv();
+    void MoveByDifferense(const int8_t diff);
     virtual void SaveCurrDivToStorage() = 0;
 
 protected:
@@ -65,6 +66,7 @@ public:
     void SetTimeValue(const uint8_t value) override;
     bool IsCurDivMajor() const override;
     void Setup() override;
+    void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) override;
 
 protected:
     void SaveCurrDivToStorage() override;
@@ -82,6 +84,7 @@ public:
     void SetTimeValue(const uint8_t value) override;
     bool IsCurDivMajor() const override;
     void Setup() override;
+    void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) override;
 
 protected:
     void SaveCurrDivToStorage() override;

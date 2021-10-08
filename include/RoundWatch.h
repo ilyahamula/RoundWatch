@@ -47,7 +47,7 @@ public:
     void MoveForward(const DIAL dial);
     void MoveBackward(const DIAL dial);
     void MoveOneDivForward(const DIAL dial);
-    void CalibrateByIncorrectTime(const int hours, const int min);
+    void CalibrateByIncorrectTime(const uint8_t hours, const uint8_t min);
 
 private:
     // Dial`s interface
@@ -69,7 +69,7 @@ private:
     TimeLed* m_leds[num];
 
 private:
-    uint16_t m_timeValue[num];
+    int16_t m_timeValue[num];
 };
 
 #endif  

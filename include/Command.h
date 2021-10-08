@@ -16,7 +16,7 @@ enum class eConcreteCommand
 class Command
 {
     friend void SetCommand(const eConcreteCommand command);
-    friend void SetIncorrrectTime(const int hours, const int min);
+    friend void SetIncorrrectTime(const uint8_t hours, const uint8_t min);
     
 private:
     Command();
@@ -26,15 +26,15 @@ private:
 public:
     static Command& Instance();
     const eConcreteCommand GetCommand();
-    void GetIncorrectTime(int& hours, int& min);
+    void GetIncorrectTime(uint8_t& hours, uint8_t& min);
 
 private:
     TaskHandle_t m_telegramBotTask;
     TaskHandle_t m_serialTask;
     TaskHandle_t m_bluetoothTask;
     eConcreteCommand m_currCmd;
-    int m_hours;
-    int m_min;
+    uint8_t m_hours;
+    uint8_t m_min;
 };
 
 #endif
