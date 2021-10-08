@@ -67,11 +67,11 @@ namespace
         {
             // Chat id of the requester
             const String& chat_id = bot.messages[i].chat_id;
-            // if (chat_id != CHAT_ID)
-            // {
-            //     bot.sendMessage(chat_id, "Unauthorized user", "");
-            //     continue;
-            // }
+            if (chat_id != CHAT_ID)
+            {
+                bot.sendMessage(chat_id, "Unauthorized user");
+                continue;
+            }
     
             // Print the received message
             const String& text = bot.messages[i].text;
@@ -79,6 +79,7 @@ namespace
             if (isIncorrectTimeMode)
             {
                 Debug::Print("\nIncorrect time flag\n");
+
                 uint8_t hours = -1;
                 uint8_t min = -1;
                 if (ParseTime(text, hours, min))
@@ -86,11 +87,14 @@ namespace
                     SetIncorrrectTime(hours, min);
                     SetCommand(eConcreteCommand::eIncorrectTime);
                     isIncorrectTimeMode = false;
+
+                    String msg = "Done!";
+                    bot.sendMessage(chat_id, msg);
                 }
                 else
                 {
-                    String msg = "Incorrect timeformat! Print time in format hh:mm";
-                    bot.sendMessage(chat_id, msg, "");
+                    String msg = "Incorrect time format! Print time in format hh:mm";
+                    bot.sendMessage(chat_id, msg);
                 }
             }
             else if (text == "/start")
