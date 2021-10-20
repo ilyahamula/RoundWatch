@@ -13,16 +13,36 @@ void SetCommand(const eConcreteCommand command)
     Debug::Print("command setted\n");
 }
 
-void SetIncorrrectTime(const uint8_t hours, const uint8_t min)
+void SetIncorrrectTime(const int8_t hours, const int8_t min)
 {
     Command::Instance().m_hours = hours;
     Command::Instance().m_min = min;
     Debug::Print("\nincorrect time setted\n");
 }
 
+void SetTimeOffset(const uint32_t offset)
+{
+    Command::Instance().m_offset = offset;
+    Debug::Print("\ntime offset setted\n");
+}
+
 namespace
 {
-    bool ParseTime(const String& text, uint8_t& hours, uint8_t& min)
+    namespace FlagManager
+    {
+        static bool isIncorrectTimeMode = false;
+        static bool isTimeOffsetMode = false;
+    };
+
+    bool isNumber(const String& str)
+    {
+        for (const auto ch : str)
+            if (!isDigit(ch))
+                return false;
+        return true;
+    };
+
+    bool ParseTime(const String& text, int8_t& hours, int8_t& min)
     {
         const int pos = text.indexOf(':');
         if (pos == -1)
@@ -34,14 +54,6 @@ namespace
         Debug::Print(hoursStr);
         Debug::Print("\nparse min:" );
         Debug::Print(minutesStr);
-
-        auto isNumber = [](const String& str) -> bool
-        {
-            for (const auto ch : str)
-                if (!isDigit(ch))
-                    return false;
-            return true;
-        };
 
         if (!isNumber(hoursStr) || !isNumber(minutesStr))
             return false;
@@ -57,7 +69,16 @@ namespace
         return true;
     }
 
-    void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot, bool& isIncorrectTimeMode) 
+    bool ParseNumber(const String& text, uint32_t& offsetInSec)
+    {
+        if (!isNumber(text))
+            return false;
+
+        offsetInSec = text.toInt();
+        return true;
+    }
+
+    void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
     {
         Debug::Print("\nHandleNewMessages ");
         Debug::Print(String(numNewMessages));
@@ -72,21 +93,21 @@ namespace
                 bot.sendMessage(chat_id, "Unauthorized user");
                 continue;
             }
-    
+
             // Print the received message
             const String& text = bot.messages[i].text;
             Debug::Print(text + "\n");
-            if (isIncorrectTimeMode)
+            if (FlagManager::isIncorrectTimeMode)
             {
                 Debug::Print("\nIncorrect time flag\n");
 
-                uint8_t hours = -1;
-                uint8_t min = -1;
+                int8_t hours = -1;
+                int8_t min = -1;
                 if (ParseTime(text, hours, min))
                 {
                     SetIncorrrectTime(hours, min);
                     SetCommand(eConcreteCommand::eIncorrectTime);
-                    isIncorrectTimeMode = false;
+                    FlagManager::isIncorrectTimeMode = false;
 
                     String msg = "Done!";
                     bot.sendMessage(chat_id, msg);
@@ -94,6 +115,25 @@ namespace
                 else
                 {
                     String msg = "Incorrect time format! Print time in format hh:mm";
+                    bot.sendMessage(chat_id, msg);
+                }
+            }
+            else if (FlagManager::isTimeOffsetMode)
+            {
+                Debug::Print("\nTime offset flag\n");
+                uint32_t offsetInSec = 0;
+                if (ParseNumber(text, offsetInSec))
+                {
+                    SetTimeOffset(offsetInSec);
+                    SetCommand(eConcreteCommand::eTimeOffset);
+                    FlagManager::isTimeOffsetMode = false;
+
+                    String msg = "Done!";
+                    bot.sendMessage(chat_id, msg);
+                }
+                else
+                {
+                    String msg = "Incorrect value";
                     bot.sendMessage(chat_id, msg);
                 }
             }
@@ -133,7 +173,13 @@ namespace
             {
                 String msg = "print time in format hh:mm";
                 bot.sendMessage(chat_id, msg, "");
-                isIncorrectTimeMode = true;
+                FlagManager::isIncorrectTimeMode = true;
+            }
+            else if (text == TIME_OFFSET)
+            {
+                String msg = "print UTC time offset in seconds\n (Example: UTC+3 = 10800 sec)\n";
+                bot.sendMessage(chat_id, msg, "");
+                FlagManager::isTimeOffsetMode = true;
             }
         }
     }
@@ -146,7 +192,6 @@ namespace
 
         int botRequestDelay = 1000;
         unsigned long lastTimeBotRan = 0;
-        bool isIncorrectTimeMode = false;
 
         while (true)
         {
@@ -157,7 +202,7 @@ namespace
                 while(numNewMessages) 
                 {
                     Debug::Print("got response\n");
-                    HandleNewMessages(numNewMessages, bot, isIncorrectTimeMode);
+                    HandleNewMessages(numNewMessages, bot);
                     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
                 }
                 lastTimeBotRan = millis();
@@ -236,6 +281,7 @@ Command::Command()
     , m_currCmd(eConcreteCommand::eNone)
     , m_hours(-1)
     , m_min(-1)
+    , m_offset(0)
 {
     xTaskCreatePinnedToCore(
                     RunTelegramBot,   /* Task function. */
@@ -278,11 +324,18 @@ const eConcreteCommand Command::GetCommand()
     return tempCmd;
 }
 
-void Command::GetIncorrectTime(uint8_t& hours, uint8_t& min)
+void Command::GetIncorrectTime(int8_t& hours, int8_t& min)
 {
     hours = m_hours;
     min = m_min;
 
     m_hours = -1;
     m_min = -1;
+}
+
+uint32_t Command::GetTimeOffset()
+{
+    uint32_t tempOffset = m_offset;
+    m_offset = 0;
+    return tempOffset;
 }

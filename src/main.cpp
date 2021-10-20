@@ -4,6 +4,7 @@
 #include "Debug.h"
 #include "Settings.h"
 #include "Command.h"
+#include "Time.h"
 #include "RoundWatch.h"
 
 RoundWatch watch; 
@@ -14,13 +15,13 @@ void setup()
 	WiFi.mode(WIFI_STA);
   	WiFi.begin(SSID, PASSWORD);
  
-  	while (WiFi.status() != WL_CONNECTED) 
-	  {
+  	while (WiFi.status() != WL_CONNECTED)
+	{
     	delay(1000);
     	Debug::Print("Connecting to WiFi..\n");
   	}
 	SetupWatch(watch);
-	Debug::Print("--------end Setup()\n");                                                                         
+	Debug::Print("--------end Setup()\n");
 }
 
 void loop()
@@ -39,13 +40,20 @@ void loop()
 	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
 		watch.MoveOneDivForward(DIAL::MINUTES);
 	else if (cmd == eConcreteCommand::eIncorrectTime)
-	{
-		uint8_t hours = -1;
-		uint8_t min = -1;
-		Command::Instance().GetIncorrectTime(hours, min);
+	{ 
+		int8_t hours = -1;
+		int8_t min = -1;
+		Command::Instance().GetIncorrectTime(hours, min); 
 		if (hours != -1 && min != -1)
 			watch.CalibrateByIncorrectTime(hours, min);
 	}
+	else if (cmd == eConcreteCommand::eTimeOffset)
+	{ 
+		const uint32_t offset = Command::Instance().GetTimeOffset(); 
+		TimeManager::Instance().SetTimeOffset(offset);
+	}
 
-	//watch.SetRealTime(myClock.hour, myClock.minute);
+	const auto timeStruct = TimeManager::Instance().GetTime();
+	if (timeStruct.hours != -1)
+		watch.SetRealTime(timeStruct.hours, timeStruct.minutes);
 }

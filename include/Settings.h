@@ -37,6 +37,7 @@
 #define MV_FRWD_STEP_HOURS "/mv_frwd_step_hours"
 #define MV_FRWD_STEP_MIN "/mv_frwd_step_min"
 #define INCORRECT_TIME "/calibrate_by_incorrect_time"
+#define TIME_OFFSET "/time_offset"
 
 class RoundWatch;
 
