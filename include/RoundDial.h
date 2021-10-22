@@ -39,6 +39,7 @@ public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
     void MoveOneDivForward();
+    void MoveOneDivBackward();
     
 protected:
     void MoveStep(const bool forward = true);

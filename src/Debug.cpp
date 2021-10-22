@@ -152,3 +152,24 @@ void Debug::TestForMottorAndDivisions(const DIAL type, const uint8_t in1, const 
 	}
 #endif
 }
+
+void Debug::PrintTime(const int8_t hours, const int8_t min)
+{
+#ifdef DEBUG
+    if (!m_serialSetup)
+    {
+        Serial.begin(9600);
+        m_serialSetup = true;
+    }
+
+	if (min != minute)
+	{
+		minute = min;
+		Serial.print("\n");
+		Serial.print(hours);
+		Serial.print(" : ");
+		Serial.println(min);
+	}
+#endif
+}
+

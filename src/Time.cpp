@@ -28,12 +28,10 @@ TimeValues TimeManager::GetTime() const
         result.hours = timeClient.getHours();
         result.minutes = timeClient.getMinutes();
         result.seconds = timeClient.getSeconds();
-        // Debug::Print(timeClient.getHours());
-        // Debug::Print(" : ");
-        // Debug::Print(timeClient.getMinutes());
-        // Debug::Print(" : ");
-        // Debug::Print(timeClient.getSeconds());
-        // Debug::Print("\n");
+    }
+    else
+    {
+        // TODO: notify if we get errors
     }
     return result;    
 }

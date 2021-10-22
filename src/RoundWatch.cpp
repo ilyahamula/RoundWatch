@@ -68,25 +68,47 @@ void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)
 void RoundWatch::SetTopBrightness(const DIAL dial, const double brightness)
 {
     if (m_leds[INT(dial)])
+    {
+        m_leds[INT(dial)]->Off();
         m_leds[INT(dial)]->SetTopBrightness(brightness);
+        m_leds[INT(dial)]->Show();
+    }
 }
 
 void RoundWatch::SetBottomBrightness(const DIAL dial, const double brightness)
 {
     if (m_leds[INT(dial)])
+    {
+        m_leds[INT(dial)]->Off();
         m_leds[INT(dial)]->SetBottomBrightness(brightness);
+        m_leds[INT(dial)]->Show();
+    }
 }
 
 void RoundWatch::SetTopColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b)
 {
     if (m_leds[INT(dial)])
+    {
+        m_leds[INT(dial)]->Off();
         m_leds[INT(dial)]->SetTopColor(r, g, b);
+        m_leds[INT(dial)]->Show();
+    }
 }
 
 void RoundWatch::SetBottomColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b)
 {
     if (m_leds[INT(dial)])
+    {
+        m_leds[INT(dial)]->Off();
         m_leds[INT(dial)]->SetBottomColor(r, g, b);
+        m_leds[INT(dial)]->Show();
+    }
+}
+
+void RoundWatch::OffLed(const DIAL dial)
+{
+    if (m_leds[INT(dial)])
+        m_leds[INT(dial)]->Off();
 }
 
 void RoundWatch::MoveForward(const DIAL dial)
@@ -108,6 +130,13 @@ void RoundWatch::MoveOneDivForward(const DIAL dial)
     RoundDial* dl = m_dials[INT(dial)];
     if (dl)
         dl->MoveOneDivForward();
+}
+
+void RoundWatch::MoveOneDivBackward(const DIAL dial)
+{
+    RoundDial* dl = m_dials[INT(dial)];
+    if (dl)
+        dl->MoveOneDivBackward();
 }
 
 void RoundWatch::CalibrateByIncorrectTime(const uint8_t hours, const uint8_t min)
@@ -133,15 +162,14 @@ void RoundWatch::Setup()
         Debug::Print(" dial");
         if (m_dials[i])
             m_dials[i]->Setup();
-        if (m_leds[i])
-            m_leds[i]->Show();
+        // if (m_leds[i])
+        //     m_leds[i]->Show();
     }
     Debug::Print("\nSetup done!");
 }
 
 void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_t sec)
 {
-
     RoundDial* rdHour = m_dials[INT(DIAL::HOURS)];
     if (rdHour)
     {
@@ -165,17 +193,25 @@ void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_
     }
 }
 
-void RoundWatch::SetDisplayedTime(const uint8_t hour, const uint8_t min, const uint8_t sec)
+RoundWatch::WatchAdjuster::WatchAdjuster(RoundWatch& rw)
+    : watchRef(rw)
 {
-    RoundDial* rdHour = m_dials[INT(DIAL::HOURS)];
-    if (rdHour)
-    {
-        rdHour->SetTimeValue(hour);
-    }
+    SetupWatch(watchRef);
 
-    RoundDial* rdMinutes = m_dials[INT(DIAL::MINUTES)];
-    if (rdMinutes)
-    {
-        rdMinutes->SetTimeValue(min);
-    }
+    auto hoursLed = watchRef.m_leds[INT(DIAL::HOURS)];
+    auto minLed = watchRef.m_leds[INT(DIAL::MINUTES)];
+    if (hoursLed)
+        hoursLed->RunSetupBlinking();
+    if (minLed)
+        minLed->RunSetupBlinking();
+}
+
+RoundWatch::WatchAdjuster::~WatchAdjuster()
+{
+    auto hoursLed = watchRef.m_leds[INT(DIAL::HOURS)];
+    auto minLed = watchRef.m_leds[INT(DIAL::MINUTES)];
+    if (hoursLed)
+        hoursLed->StopSetupBlinking();
+    if (minLed)
+        minLed->StopSetupBlinking();
 }

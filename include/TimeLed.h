@@ -5,6 +5,8 @@
 
 class TimeLed
 {
+    friend void RunBlinking(void* params);
+
 public:
     TimeLed(const uint8_t pin);
 
@@ -14,6 +16,9 @@ public:
     void SetBottomColor(const uint8_t r, const uint8_t g, const uint8_t b);
     void Show();
     void Off();
+
+    void RunSetupBlinking();
+    void StopSetupBlinking();
 
 private:
     struct sRGB
@@ -32,6 +37,8 @@ private:
 
     sRGB m_topColor;
     sRGB m_bottomColor;
+
+    TaskHandle_t m_setupBlinkTask;
 };
 
 #endif  

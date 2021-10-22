@@ -32,6 +32,15 @@ public:
         LED topLED;
         LED bottomLED;
     };
+
+    struct WatchAdjuster
+    {
+        WatchAdjuster(RoundWatch& rw);
+        ~WatchAdjuster();
+    private:
+        RoundWatch& watchRef;
+    };
+    
 public:
     RoundWatch();
     ~RoundWatch();
@@ -41,12 +50,12 @@ public:
     // RoundWatch interface
     void Setup();
     void SetRealTime(const uint8_t hour, const uint8_t min = 0, const uint8_t sec = 0);
-    void SetDisplayedTime(const uint8_t hour, const uint8_t min = 0, const uint8_t sec = 0);
 
     // for calibration
     void MoveForward(const DIAL dial);
     void MoveBackward(const DIAL dial);
     void MoveOneDivForward(const DIAL dial);
+    void MoveOneDivBackward(const DIAL dial);
     void CalibrateByIncorrectTime(const uint8_t hours, const uint8_t min);
 
 private:
@@ -59,7 +68,8 @@ private:
     void SetTopBrightness(const DIAL dial, const double brightness); // max 1.0
     void SetBottomBrightness(const DIAL dial, const double brightness); // max 1.0
     void SetTopColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b);
-    void SetBottomColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b); 
+    void SetBottomColor(const DIAL dial, const uint8_t r, const uint8_t g, const uint8_t b);
+    void OffLed(const DIAL dial);
 
 private:
     static const int num = INT(DIAL::NUM_DIALS);

@@ -135,6 +135,11 @@ void RoundDial::MoveOneDivForward()
     MoveStep();
 }
 
+void RoundDial::MoveOneDivBackward()
+{
+    MoveStep(false);
+}
+
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
 bool RoundDialHours::m_majorDiv[HOURS_DIV_NUM] = { true, false, false, true, false, false, true, false, false, 
 true, false, false, true, false, false, true, false, false, true, false, false, true, false, false };

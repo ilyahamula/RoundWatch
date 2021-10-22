@@ -34,7 +34,6 @@ public:
 #endif
     }
 
-    static int minute;
     static void Print(String& str);
     static void TestForLed(const uint16_t pin);
     static void TestForDialDivider(const uint16_t ledPin, const uint16_t dividerPin);
@@ -43,6 +42,10 @@ public:
         const uint16_t ledPin, const uint16_t dividerPin);
     static void TestForMottorAndDivisions(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4, 
         const uint16_t dividerPin);
+    static void PrintTime(const int8_t hours, const int8_t min);
+
+private:
+    static int minute;
 };
 
 #endif

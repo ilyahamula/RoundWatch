@@ -10,6 +10,8 @@ enum class eConcreteCommand
     eMoveBackwardMin,
     eMoveFrwdStepHour,
     eMoveFrwdStepMin,
+    eMoveBackwardStepHour,
+    eMoveBackwardStepMin,
     eIncorrectTime,
     eTimeOffset,
 };

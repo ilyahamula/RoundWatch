@@ -7,6 +7,7 @@
 #include "Command.h"
 #include "Settings.h"
 
+// Friend functions
 void SetCommand(const eConcreteCommand command)
 {
     Command::Instance().m_currCmd = command;
@@ -153,8 +154,14 @@ namespace
                 welcome += "  to move one step forward hours dial \n";
                 welcome += MV_FRWD_STEP_MIN;
                 welcome += "  to move one step forward minutes dial \n";
+                welcome += MV_BKWD_STEP_HOURS;
+                welcome += "  to move one step backward hours dial \n";
+                welcome += MV_BKWD_STEP_MIN;
+                welcome += "  to move one step backward minutes dial \n";
                 welcome += INCORRECT_TIME;
                 welcome += "  to tell watch that time is incorrect \n";
+                welcome += CONNECTION_TEST;
+                welcome += " to test the connection \n";
                 bot.sendMessage(chat_id, welcome, "");
             }
             else if (text == MV_FRWD_HOURS)
@@ -169,6 +176,10 @@ namespace
 	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
 	    	else if (text == MV_FRWD_STEP_MIN)
 	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
+            else if (text == MV_BKWD_STEP_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveBackwardStepHour);
+	    	else if (text == MV_BKWD_STEP_MIN)
+	    		SetCommand(eConcreteCommand::eMoveBackwardStepMin);
             else if (text == INCORRECT_TIME)
             {
                 String msg = "print time in format hh:mm";
@@ -180,6 +191,11 @@ namespace
                 String msg = "print UTC time offset in seconds\n (Example: UTC+3 = 10800 sec)\n";
                 bot.sendMessage(chat_id, msg, "");
                 FlagManager::isTimeOffsetMode = true;
+            }
+            else if (text == CONNECTION_TEST)
+            {
+                String msg = "Connection is tested";
+                bot.sendMessage(chat_id, msg, "");
             }
         }
     }
@@ -198,7 +214,6 @@ namespace
             if (millis() > lastTimeBotRan + botRequestDelay)  
             {
                 int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
-
                 while(numNewMessages) 
                 {
                     Debug::Print("got response\n");
@@ -210,36 +225,6 @@ namespace
             vTaskDelay(10);
         }
     }
-
-#ifdef DEBUG
-    void RunSerial(void* parameters)
-    {
-        while(true)
-        {
-            if (Serial.available() > 0)
-	        {
-	        	const uint8_t byte = Serial.read();
-	        	Serial.println(byte);
-
-	        	if (byte == 49) // 1
-	        		SetCommand(eConcreteCommand::eMoveForwardHour);
-	        	else if (byte == 50) // 2
-	        		SetCommand(eConcreteCommand::eMoveBackwardHour);
-	        	else if (byte == 51) //3
-	        		SetCommand(eConcreteCommand::eMoveForwardMin);
-	        	else if (byte == 52) // 4
-	        		SetCommand(eConcreteCommand::eMoveBackwardMin);
-	        	else if (byte == 53) // 5
-	        		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
-	        	else if (byte == 54) // 6
-	        		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
-
-	        	Serial.flush();
-	        }
-            vTaskDelay(10);
-        }
-    }
-#endif
 
     // void RunBluetooth(void* parameters)
     // {
@@ -274,6 +259,7 @@ namespace
     // }
 }
 
+// class Command
 Command::Command()
     : m_telegramBotTask()
     , m_serialTask()
@@ -291,16 +277,7 @@ Command::Command()
                     1,           /* priority of the task */
                     &m_telegramBotTask,      /* Task handle to keep track of created task */
                     0);          /* pin task to core 0 */                  
-#ifdef DEBUG
-    xTaskCreatePinnedToCore(
-                    RunSerial,   /* Task function. */
-                    "Serial port",     /* name of task. */
-                    10000,       /* Stack size of task */
-                    NULL,        /* parameter of the task */
-                    1,           /* priority of the task */
-                    &m_serialTask,      /* Task handle to keep track of created task */
-                    0);          /* pin task to core 0 */ 
-#endif
+
     // xTaskCreatePinnedToCore(
     //                 RunBluetooth,   /* Task function. */
     //                 "Bluetooth",     /* name of task. */

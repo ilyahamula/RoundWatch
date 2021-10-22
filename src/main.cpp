@@ -12,6 +12,8 @@ RoundWatch watch;
 void setup()
 {
 	Debug::Print("--------Setup()\n");
+	RoundWatch::WatchAdjuster adjuster(watch);
+	
 	WiFi.mode(WIFI_STA);
   	WiFi.begin(SSID, PASSWORD);
  
@@ -20,7 +22,6 @@ void setup()
     	delay(1000);
     	Debug::Print("Connecting to WiFi..\n");
   	}
-	SetupWatch(watch);
 	Debug::Print("--------end Setup()\n");
 }
 
@@ -39,6 +40,10 @@ void loop()
 		watch.MoveOneDivForward(DIAL::HOURS);
 	else if (cmd == eConcreteCommand::eMoveFrwdStepMin)
 		watch.MoveOneDivForward(DIAL::MINUTES);
+	else if (cmd == eConcreteCommand::eMoveBackwardStepHour)
+		watch.MoveOneDivBackward(DIAL::HOURS);
+	else if (cmd == eConcreteCommand::eMoveBackwardStepMin)
+		watch.MoveOneDivBackward(DIAL::MINUTES);
 	else if (cmd == eConcreteCommand::eIncorrectTime)
 	{ 
 		int8_t hours = -1;
@@ -55,5 +60,8 @@ void loop()
 
 	const auto timeStruct = TimeManager::Instance().GetTime();
 	if (timeStruct.hours != -1)
+	{
+		Debug::PrintTime(timeStruct.hours, timeStruct.minutes);
 		watch.SetRealTime(timeStruct.hours, timeStruct.minutes);
+	}
 }
