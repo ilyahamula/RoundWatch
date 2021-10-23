@@ -14,6 +14,7 @@ void RunBlinking(void* params)
     while (true)
     {
         const double step = 0.1;
+        const int delayStep = 80;
         for (double bright = 0.0; bright < 1.0; bright += step)
         {
             for (uint16_t i = 0; i < LED_COUNT; i++)
@@ -23,7 +24,8 @@ void RunBlinking(void* params)
                                               255 * bright);
               thisObj->strip.setPixelColor(i, color);
             }
-            vTaskDelay(300);
+            thisObj->strip.show();
+            delay(delayStep);
         }
 
         for (double bright = 1.0; bright > 0.0; bright -= step)
@@ -35,8 +37,10 @@ void RunBlinking(void* params)
                                               255 * bright);
               thisObj->strip.setPixelColor(i, color);
             }
-            vTaskDelay(300);
+            thisObj->strip.show();
+            delay(delayStep);
         }
+        vTaskDelay(10);
     }
 }
 
