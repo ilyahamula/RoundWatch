@@ -3,6 +3,18 @@
 
 #define LED_COUNT 9
 
+namespace
+{
+  void SetSpecificPixels(Adafruit_NeoPixel& strip, uint8_t r, uint8_t g, uint8_t b, 
+    double bright, uint8_t from = 0, uint8_t to = LED_COUNT)
+  {
+    const auto color = strip.Color(r * bright, g * bright, b * bright);
+    for (uint16_t i = from; i < to; i++)
+      strip.setPixelColor(i, color);
+    strip.show();
+  }
+}
+
 void RunBlinking(void* params)
 {
     TimeLed* thisObj = reinterpret_cast<TimeLed*>(params);
@@ -10,34 +22,19 @@ void RunBlinking(void* params)
         return;
 
     Debug::Print("\nRunBlinking: the object of TimeLed is valid\n");
-
     while (true)
     {
         const double step = 0.1;
-        const int delayStep = 80;
+        const int delayStep = 65;
         for (double bright = 0.0; bright < 1.0; bright += step)
         {
-            for (uint16_t i = 0; i < LED_COUNT; i++)
-            {
-              const uint32_t color = thisObj->strip.Color(255 * bright, 
-                                              255 * bright, 
-                                              255 * bright);
-              thisObj->strip.setPixelColor(i, color);
-            }
-            thisObj->strip.show();
+            SetSpecificPixels(thisObj->strip, 255, 255, 255, bright);
             delay(delayStep);
         }
 
         for (double bright = 1.0; bright > 0.0; bright -= step)
         {
-            for (uint16_t i = 0; i < LED_COUNT; i++)
-            {
-              const uint32_t color = thisObj->strip.Color(255 * bright, 
-                                              255 * bright, 
-                                              255 * bright);
-              thisObj->strip.setPixelColor(i, color);
-            }
-            thisObj->strip.show();
+            SetSpecificPixels(thisObj->strip, 255, 255, 255, bright);
             delay(delayStep);
         }
         vTaskDelay(10);
@@ -85,20 +82,11 @@ void TimeLed::Show()
 {
   Debug::Print("\nTimeLed::Show()");
   
-  const auto topColor = strip.Color(m_topColor.red * m_topBrightness, 
-                                    m_topColor.green * m_topBrightness, 
-                                    m_topColor.blue * m_topBrightness);
-  for (uint16_t i = 0; i < 6; i++)
-    strip.setPixelColor(i, topColor);
+  SetSpecificPixels(strip, m_topColor.red, m_topColor.green, m_topColor.blue,
+    m_topBrightness, 0, 6);
 
-
-  const auto bottomColor = strip.Color(m_bottomColor.red * m_bottomBrightness,
-                                      m_bottomColor.green * m_bottomBrightness,
-                                      m_bottomColor.blue * m_bottomBrightness);
-  for (uint16_t i = 6; i < LED_COUNT; i++)
-    strip.setPixelColor(i, bottomColor);
-
-  strip.show();
+  SetSpecificPixels(strip, m_bottomColor.red, m_bottomColor.green, m_bottomColor.blue,
+    m_bottomBrightness, 6, LED_COUNT);
 }
 
 void TimeLed::Off()
@@ -106,6 +94,17 @@ void TimeLed::Off()
     Debug::Print("\nTimeLed::Off()");
     strip.clear();
     strip.show();
+}
+
+void TimeLed::OffTop()
+{
+  SetSpecificPixels(strip, 0, 0, 0, 0.0, 0, 6);
+}
+
+void TimeLed::OnTop()
+{
+  SetSpecificPixels(strip, m_topColor.red, m_topColor.green, m_topColor.blue,
+    m_topBrightness, 0, 6);
 }
 
 void TimeLed::RunSetupBlinking()

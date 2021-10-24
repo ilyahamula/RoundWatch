@@ -16,9 +16,13 @@ public:
     void SetBottomColor(const uint8_t r, const uint8_t g, const uint8_t b);
     void Show();
     void Off();
+    void OffTop();
+    void OnTop();
 
     void RunSetupBlinking();
     void StopSetupBlinking();
+
+private:
 
 private:
     struct sRGB

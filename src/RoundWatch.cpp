@@ -162,35 +162,29 @@ void RoundWatch::Setup()
         Debug::Print(" dial");
         if (m_dials[i])
             m_dials[i]->Setup();
-        // if (m_leds[i])
-        //     m_leds[i]->Show();
     }
     Debug::Print("\nSetup done!");
 }
 
 void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_t sec)
 {
-    RoundDial* rdHour = m_dials[INT(DIAL::HOURS)];
-    if (rdHour)
+    auto setTimeForWatch = [this](const DIAL dial, const uint8_t value)
     {
-        rdHour->SetTimeValue(hour);
-        if (rdHour->IsCurDivMajor())
+        RoundDial* rdHour = m_dials[INT(dial)];
+        TimeLed* ledHour = m_leds[INT(dial)];
+        if (rdHour && ledHour)
         {
-            //m_leds[INT(DIAL::HOURS)]->SetTopColor(r, g, b);
+            rdHour->SetTimeValue(value);
+            if (rdHour->IsCurDivMajor())
+                ledHour->OnTop();
+            else
+                ledHour->OffTop();
+            m_timeValue[INT(dial)] = value;
         }
-        m_timeValue[INT(DIAL::HOURS)] = hour;
-    }
+    };
 
-    RoundDial* rdMinutes = m_dials[INT(DIAL::MINUTES)];
-    if (rdMinutes)
-    {
-        rdMinutes->SetTimeValue(min);
-        if (rdHour->IsCurDivMajor())
-        {
-            //m_leds[INT(DIAL::MINUTES)]->SetTopColor(r, g, b);
-        }
-        m_timeValue[INT(DIAL::MINUTES)] = min;
-    }
+    setTimeForWatch(DIAL::HOURS, hour);
+    setTimeForWatch(DIAL::MINUTES, min);
 }
 
 RoundWatch::WatchAdjuster::WatchAdjuster(RoundWatch& rw)
