@@ -7,7 +7,7 @@
 #define EEPROM_SIZE 2
 #define HOURS_ADDRESS 0
 #define MIN_ADDRESS 1
-#define MIN_STEP 3
+#define MIN_STEP 2
 #define USER_STEP 10
 
 //#define OLD_MOVE_DIVISION
@@ -78,10 +78,16 @@ void RoundDial::MoveStep(const bool forward)
     m_stepperMotor.step(stepsDirection); // old realization
 #else
     const int stepsDirection = (forward ? MIN_STEP : (-1 * MIN_STEP));
-    while(!digitalRead(m_divisionsPin))
+    while (forward && !digitalRead(m_divisionsPin))
         m_stepperMotor.step(stepsDirection);
 
     while(digitalRead(m_divisionsPin))
+        m_stepperMotor.step(stepsDirection);
+
+    while(!digitalRead(m_divisionsPin))
+        m_stepperMotor.step(stepsDirection);
+
+    while (!forward && digitalRead(m_divisionsPin))
         m_stepperMotor.step(stepsDirection);
 #endif
 }
