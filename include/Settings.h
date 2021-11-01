@@ -1,9 +1,5 @@
 #ifndef SETTINGSHEADER_H
-#define  SETTINGSHEADER_H
-
-// EEPROM
-#define IS_SETUP_CLOCK_ADDR 2
-#define IS_SETTUP 137
+#define SETTINGSHEADER_H
 
 // pins
 #define HOURS_IN1 12

@@ -19,8 +19,9 @@ public:
     void OffTop();
     void OnTop();
 
-    void RunSetupBlinking();
+    void RunSetupBlinking(const uint8_t r, const uint8_t g, const uint8_t b);
     void StopSetupBlinking();
+    void GetBlinkingColor(uint8_t& r, uint8_t& g, uint8_t& b);
 
 private:
 
@@ -41,6 +42,7 @@ private:
 
     sRGB m_topColor;
     sRGB m_bottomColor;
+    sRGB m_blinkingColor;
 
     TaskHandle_t m_setupBlinkTask;
 };

@@ -1,5 +1,5 @@
 #ifndef COMMANDHEADER_H
-#define  COMMANDHEADER_H
+#define COMMANDHEADER_H
 
 enum class eConcreteCommand
 {
@@ -14,6 +14,7 @@ enum class eConcreteCommand
     eMoveBackwardStepMin,
     eIncorrectTime,
     eTimeOffset,
+    eConnectionLost,
 };
 
 class Command

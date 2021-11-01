@@ -33,10 +33,10 @@ public:
         LED bottomLED;
     };
 
-    struct WatchAdjuster
+    struct WatchBlinker
     {
-        WatchAdjuster(RoundWatch& rw);
-        ~WatchAdjuster();
+        WatchBlinker(RoundWatch& rw, const uint8_t r, const uint8_t g, const uint8_t b);
+        ~WatchBlinker();
     private:
         RoundWatch& watchRef;
     };

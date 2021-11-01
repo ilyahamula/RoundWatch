@@ -187,20 +187,18 @@ void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_
     setTimeForWatch(DIAL::MINUTES, min);
 }
 
-RoundWatch::WatchAdjuster::WatchAdjuster(RoundWatch& rw)
+RoundWatch::WatchBlinker::WatchBlinker(RoundWatch& rw, const uint8_t r, const uint8_t g, const uint8_t b)
     : watchRef(rw)
 {
-    SetupWatch(watchRef);
-
     auto hoursLed = watchRef.m_leds[INT(DIAL::HOURS)];
     auto minLed = watchRef.m_leds[INT(DIAL::MINUTES)];
     if (hoursLed)
-        hoursLed->RunSetupBlinking();
+        hoursLed->RunSetupBlinking(r, g, b);
     if (minLed)
-        minLed->RunSetupBlinking();
+        minLed->RunSetupBlinking(r, g, b);
 }
 
-RoundWatch::WatchAdjuster::~WatchAdjuster()
+RoundWatch::WatchBlinker::~WatchBlinker()
 {
     auto hoursLed = watchRef.m_leds[INT(DIAL::HOURS)];
     auto minLed = watchRef.m_leds[INT(DIAL::MINUTES)];

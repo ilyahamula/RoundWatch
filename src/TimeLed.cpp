@@ -21,6 +21,8 @@ void RunBlinking(void* params)
     if (!thisObj)
         return;
 
+    uint8_t r = 0, g = 0, b = 0;
+    thisObj->GetBlinkingColor(r, g, b);
     Debug::Print("\nRunBlinking: the object of TimeLed is valid\n");
     while (true)
     {
@@ -28,13 +30,13 @@ void RunBlinking(void* params)
         const int delayStep = 65;
         for (double bright = 0.0; bright < 1.0; bright += step)
         {
-            SetSpecificPixels(thisObj->strip, 255, 255, 255, bright);
+            SetSpecificPixels(thisObj->strip, r, g, b, bright);
             delay(delayStep);
         }
 
         for (double bright = 1.0; bright > 0.0; bright -= step)
         {
-            SetSpecificPixels(thisObj->strip, 255, 255, 255, bright);
+            SetSpecificPixels(thisObj->strip, r, g, b, bright);
             delay(delayStep);
         }
         vTaskDelay(10);
@@ -47,6 +49,7 @@ TimeLed::TimeLed(const uint8_t pin)
     , m_bottomBrightness(0)
     , m_topColor()
     , m_bottomColor()
+    , m_blinkingColor()
     , m_setupBlinkTask(nullptr)
 {
   strip.begin();           
@@ -107,8 +110,12 @@ void TimeLed::OnTop()
     m_topBrightness, 0, 6);
 }
 
-void TimeLed::RunSetupBlinking()
+void TimeLed::RunSetupBlinking(const uint8_t r, const uint8_t g, const uint8_t b)
 {
+  m_blinkingColor.red = r;
+  m_blinkingColor.green = g;
+  m_blinkingColor.blue = b;
+
   Debug::Print("\nBlinkSetupProces - true\n");
   xTaskCreatePinnedToCore(
         RunBlinking,   /* Task function. */
@@ -130,5 +137,12 @@ void TimeLed::StopSetupBlinking()
       Show();
       m_setupBlinkTask = nullptr;
   }
+}
+
+void TimeLed::GetBlinkingColor(uint8_t& r, uint8_t& g, uint8_t& b)
+{
+  r = m_blinkingColor.red;
+  g = m_blinkingColor.green;
+  b = m_blinkingColor.blue;
 }
     
