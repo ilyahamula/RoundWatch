@@ -16,7 +16,7 @@ void setup()
 	RoundWatch::WatchBlinker adjuster(watch, 255, 255, 255);
 	
 	WiFi.mode(WIFI_STA);
-  	WiFi.begin(SSID, PASSWORD);
+  	WiFi.begin(SSID_DEF, PASSWORD);
  
   	while (WiFi.status() != WL_CONNECTED)
 	{

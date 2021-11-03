@@ -1,6 +1,8 @@
 #ifndef COMMANDHEADER_H
 #define COMMANDHEADER_H
 
+#include <Arduino.h>
+
 enum class eConcreteCommand
 {
     eNone,
@@ -14,19 +16,25 @@ enum class eConcreteCommand
     eMoveBackwardStepMin,
     eIncorrectTime,
     eTimeOffset,
-    eConnectionLost,
+    eSetTopColorHour,
+    eSetBottomColorHour,
+    eSetTopColorMin,
+    eSetBottomColorMin,
 };
 
 class Command
 {
-    friend void SetCommand(const eConcreteCommand command);
-    friend void SetIncorrrectTime(const int8_t hours, const int8_t min);
-    friend void SetTimeOffset(const uint32_t offset);
+    friend class TelegramCMD;
     
 private:
     Command();
     Command(const Command&) = delete;
     Command& operator=(const Command&) = delete;
+
+private:
+    void SetCommand(const eConcreteCommand command);
+    void SetIncorrrectTime(const int8_t hours, const int8_t min);
+    void SetTimeOffset(const uint32_t offset);
 
 public:
     static Command& Instance();
