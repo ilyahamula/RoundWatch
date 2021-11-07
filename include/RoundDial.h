@@ -1,5 +1,5 @@
 #ifndef ROUNDIAL_H
-#define  ROUNDIAL_H
+#define ROUNDIAL_H
 
 #include <Arduino.h>
 #include "Stepper_28BYJ_48.h"
@@ -7,7 +7,6 @@
 #define HOURS_DIV_NUM 24
 #define MIN_DIV_NUM 24
 #define MINUTES_NUM 60
-
 
 enum class DIAL
 {

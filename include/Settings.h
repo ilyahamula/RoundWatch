@@ -21,7 +21,7 @@
 
 // credentials
 #define BOT_TOKEN ""
-#define SSID ""
+#define SSID_DEF ""
 #define PASSWORD ""
 #define CHAT_ID ""
 

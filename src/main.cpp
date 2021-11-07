@@ -18,7 +18,7 @@ void setup()
 	WiFi.mode(WIFI_STA);
 	auto connectWiFi = []()
 	{
-		WiFi.begin(SSID, PASSWORD);
+		WiFi.begin(SSID_DEF, PASSWORD);
 		while (WiFi.status() != WL_CONNECTED)
 		{
     		delay(1000);
