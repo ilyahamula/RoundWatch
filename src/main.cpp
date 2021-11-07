@@ -16,18 +16,23 @@ void setup()
 	RoundWatch::WatchBlinker adjuster(watch, 255, 255, 255);
 	
 	WiFi.mode(WIFI_STA);
-  	WiFi.begin(SSID, PASSWORD);
- 
-  	while (WiFi.status() != WL_CONNECTED)
+	auto connectWiFi = []()
 	{
-    	delay(1000);
-    	Debug::Print("Connecting to WiFi..\n");
-  	}
+		WiFi.begin(SSID, PASSWORD);
+		while (WiFi.status() != WL_CONNECTED)
+		{
+    		delay(1000);
+    		Debug::Print("Connecting to WiFi..\n");
+  		}
+	};
 
-	WiFi.onEvent([](WiFiEvent_t event, WiFiEventInfo_t info){
+	connectWiFi();
+
+	WiFi.onEvent([&connectWiFi](WiFiEvent_t event, WiFiEventInfo_t info){
 		RoundWatch::WatchBlinker adjuster(watch, 255, 0, 0);
   		Debug::Print("\nWiFi lost connection. Trying to Reconnect");
-  		WiFi.reconnect();
+  		WiFi.disconnect();
+		connectWiFi();
 	}, SYSTEM_EVENT_STA_DISCONNECTED);
 
 	Debug::Print("--------end Setup()\n");
