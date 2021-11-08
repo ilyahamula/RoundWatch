@@ -216,7 +216,6 @@ namespace
                 int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
                 while(numNewMessages) 
                 {
-                    Debug::Print("got response\n");
                     HandleNewMessages(numNewMessages, bot);
                     numNewMessages = bot.getUpdates(bot.last_message_received + 1);
                 }

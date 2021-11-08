@@ -17,6 +17,10 @@ enum class eConcreteCommand
     eConnectionLost,
 };
 
+void SetCommand(const eConcreteCommand command);
+void SetIncorrrectTime(const int8_t hours, const int8_t min);
+void SetTimeOffset(const uint32_t offset);
+
 class Command
 {
     friend void SetCommand(const eConcreteCommand command);
