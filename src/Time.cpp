@@ -5,7 +5,7 @@
 #include "Debug.h"
 #include "Time.h"
 
-const long utcOffsetInSeconds = 10800;
+const long utcOffsetInSeconds = 7200;
 static WiFiUDP ntpUDP;
 static NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
