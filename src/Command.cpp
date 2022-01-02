@@ -5,20 +5,220 @@
 
 #include "Debug.h"
 #include "Command.h"
-#include "TelegramCMD.h"
+#include "Settings.h"
+
+// Friend functions
+void SetCommand(const eConcreteCommand command)
+{
+    Command::Instance().m_currCmd = command;
+    Debug::Print("command setted\n");
+}
+
+void SetIncorrrectTime(const int8_t hours, const int8_t min)
+{
+    Command::Instance().m_hours = hours;
+    Command::Instance().m_min = min;
+    Debug::Print("\nincorrect time setted\n");
+}
+
+void SetTimeOffset(const uint32_t offset)
+{
+    Command::Instance().m_offset = offset;
+    Debug::Print("\ntime offset setted\n");
+}
 
 namespace
 {
-    
+    namespace FlagManager
+    {
+        static bool isIncorrectTimeMode = false;
+        static bool isTimeOffsetMode = false;
+    };
+
+    bool isNumber(const String& str)
+    {
+        for (const auto ch : str)
+            if (!isDigit(ch))
+                return false;
+        return true;
+    };
+
+    bool ParseTime(const String& text, int8_t& hours, int8_t& min)
+    {
+        const int pos = text.indexOf(':');
+        if (pos == -1)
+            return false;
+
+        const String hoursStr = text.substring(0, pos);
+        const String minutesStr = text.substring(pos + 1);
+        Debug::Print("\nparse hr:" );
+        Debug::Print(hoursStr);
+        Debug::Print("\nparse min:" );
+        Debug::Print(minutesStr);
+
+        if (!isNumber(hoursStr) || !isNumber(minutesStr))
+            return false;
+        
+        int hoursLocal = hoursStr.toInt();
+        int minLocal = minutesStr.toInt();
+
+        if (hoursLocal > 23 || hoursLocal < 0 ||
+            minLocal > 59 || minLocal < 0)
+            return false;
+        hours = hoursLocal;
+        min = minLocal; 
+        return true;
+    }
+
+    bool ParseNumber(const String& text, uint32_t& offsetInSec)
+    {
+        if (!isNumber(text))
+            return false;
+
+        offsetInSec = text.toInt();
+        return true;
+    }
+
+    void HandleNewMessages(int numNewMessages, UniversalTelegramBot& bot) 
+    {
+        Debug::Print("\nHandleNewMessages ");
+        Debug::Print(String(numNewMessages));
+        Debug::Print("\n");
+
+        for (int i = 0; i < numNewMessages; i++) 
+        {
+            // Chat id of the requester
+            const String& chat_id = bot.messages[i].chat_id;
+            if (chat_id != CHAT_ID)
+            {
+                bot.sendMessage(chat_id, "Unauthorized user");
+                continue;
+            }
+
+            // Print the received message
+            const String& text = bot.messages[i].text;
+            Debug::Print(text + "\n");
+            if (FlagManager::isIncorrectTimeMode)
+            {
+                Debug::Print("\nIncorrect time flag\n");
+
+                int8_t hours = -1;
+                int8_t min = -1;
+                if (ParseTime(text, hours, min))
+                {
+                    SetIncorrrectTime(hours, min);
+                    SetCommand(eConcreteCommand::eIncorrectTime);
+                    FlagManager::isIncorrectTimeMode = false;
+
+                    String msg = "Done!";
+                    bot.sendMessage(chat_id, msg);
+                }
+                else
+                {
+                    String msg = "Incorrect time format! Print time in format hh:mm";
+                    bot.sendMessage(chat_id, msg);
+                }
+            }
+            else if (FlagManager::isTimeOffsetMode)
+            {
+                Debug::Print("\nTime offset flag\n");
+                uint32_t offsetInSec = 0;
+                if (ParseNumber(text, offsetInSec))
+                {
+                    SetTimeOffset(offsetInSec);
+                    SetCommand(eConcreteCommand::eTimeOffset);
+                    FlagManager::isTimeOffsetMode = false;
+
+                    String msg = "Done!";
+                    bot.sendMessage(chat_id, msg);
+                }
+                else
+                {
+                    String msg = "Incorrect value";
+                    bot.sendMessage(chat_id, msg);
+                }
+            }
+            else if (text == "/start")
+            {
+                String welcome = "Welcome, " + bot.messages[i].from_name + ".\n";
+                welcome += "Use the following commands to control RoundWatch.\n\n";
+                welcome += MV_FRWD_HOURS;
+                welcome += "  to move forward hours dial \n";
+                welcome += MV_BKWD_HOURS;
+                welcome += "  to move backward hours dial \n";
+                welcome += MV_FRWD_MIN;
+                welcome += "  to move forward minutes dial \n";
+                welcome += MV_BKWD_MIN;
+                welcome += "  to move backward minutes dial \n";
+                welcome += MV_FRWD_STEP_HOURS;
+                welcome += "  to move one step forward hours dial \n";
+                welcome += MV_FRWD_STEP_MIN;
+                welcome += "  to move one step forward minutes dial \n";
+                welcome += MV_BKWD_STEP_HOURS;
+                welcome += "  to move one step backward hours dial \n";
+                welcome += MV_BKWD_STEP_MIN;
+                welcome += "  to move one step backward minutes dial \n";
+                welcome += INCORRECT_TIME;
+                welcome += "  to tell watch that time is incorrect \n";
+                welcome += CONNECTION_TEST;
+                welcome += " to test the connection \n";
+                bot.sendMessage(chat_id, welcome, "");
+            }
+            else if (text == MV_FRWD_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveForwardHour);
+	    	else if (text == MV_BKWD_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveBackwardHour);
+	    	else if (text == MV_FRWD_MIN)
+	    		SetCommand(eConcreteCommand::eMoveForwardMin);
+	    	else if (text == MV_BKWD_MIN)
+	    		SetCommand(eConcreteCommand::eMoveBackwardMin);
+	    	else if (text == MV_FRWD_STEP_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepHour);
+	    	else if (text == MV_FRWD_STEP_MIN)
+	    		SetCommand(eConcreteCommand::eMoveFrwdStepMin);
+            else if (text == MV_BKWD_STEP_HOURS)
+	    		SetCommand(eConcreteCommand::eMoveBackwardStepHour);
+	    	else if (text == MV_BKWD_STEP_MIN)
+	    		SetCommand(eConcreteCommand::eMoveBackwardStepMin);
+            else if (text == INCORRECT_TIME)
+            {
+                String msg = "print time in format hh:mm";
+                bot.sendMessage(chat_id, msg, "");
+                FlagManager::isIncorrectTimeMode = true;
+            }
+            else if (text == TIME_OFFSET)
+            {
+                String msg = "print UTC time offset in seconds\n (Example: UTC+3 = 10800 sec)\n";
+                bot.sendMessage(chat_id, msg, "");
+                FlagManager::isTimeOffsetMode = true;
+            }
+            else if (text == CONNECTION_TEST)
+            {
+                String msg = "Connection is tested";
+                bot.sendMessage(chat_id, msg, "");
+            }
+        }
+    }
+
     void RunTelegramBot(void* parametrs)
     {
+        WiFiClientSecure client;
+        client.setCACert(TELEGRAM_CERTIFICATE_ROOT);
+        UniversalTelegramBot bot(BOT_TOKEN, client);
+
         int botRequestDelay = 1000;
         unsigned long lastTimeBotRan = 0;
+
         while (true)
         {
             if (millis() > lastTimeBotRan + botRequestDelay)  
             {
-                TelegramCMD::Instance().Update();
+                int numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+                while(numNewMessages) 
+                {
+                    HandleNewMessages(numNewMessages, bot);
+                    numNewMessages = bot.getUpdates(bot.last_message_received + 1);
+                }
                 lastTimeBotRan = millis();
             }
             vTaskDelay(10);
@@ -114,23 +314,4 @@ uint32_t Command::GetTimeOffset()
     uint32_t tempOffset = m_offset;
     m_offset = 0;
     return tempOffset;
-}
-
-void Command::SetCommand(const eConcreteCommand command)
-{
-    m_currCmd = command;
-    Debug::Print("command setted\n");
-}
-
-void Command::SetIncorrrectTime(const int8_t hours, const int8_t min)
-{
-    m_hours = hours;
-    m_min = min;
-    Debug::Print("\nincorrect time setted\n");
-}
-
-void Command::SetTimeOffset(const uint32_t offset)
-{
-    m_offset = offset;
-    Debug::Print("\ntime offset setted\n");
 }
