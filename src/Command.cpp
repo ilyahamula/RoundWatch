@@ -138,7 +138,7 @@ namespace
                     bot.sendMessage(chat_id, msg);
                 }
             }
-            else if (text == "/start")
+            else if (text == HELP)
             {
                 String welcome = "Welcome, " + bot.messages[i].from_name + ".\n";
                 welcome += "Use the following commands to control RoundWatch.\n\n";

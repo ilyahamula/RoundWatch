@@ -26,6 +26,7 @@
 #define CHAT_ID ""
 
 //commands
+#define HELP "/help"
 #define MV_FRWD_HOURS "/mv_frwd_hours"
 #define MV_BKWD_HOURS "/mv_bkwd_hours"
 #define MV_FRWD_MIN "/mv_frwd_min"
