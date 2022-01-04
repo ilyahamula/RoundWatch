@@ -16,12 +16,11 @@
 #define MINUTES_LED 18
 #define MINUTES_DIV 17
 
-#define ESP32_SDA 21
-#define ESP32_SCL 22
+#define LIGHT_SENSOR_PIN 34
 
 // credentials
 #define BOT_TOKEN ""
-#define SSID_DEF ""
+#define SSID_DEF "" 
 #define PASSWORD ""
 #define CHAT_ID ""
 

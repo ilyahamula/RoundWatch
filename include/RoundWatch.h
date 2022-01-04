@@ -50,6 +50,7 @@ public:
     // RoundWatch interface
     void Setup();
     void SetRealTime(const uint8_t hour, const uint8_t min = 0, const uint8_t sec = 0);
+    void AdjustBrightness(const int analogValue);
 
     // for calibration
     void MoveForward(const DIAL dial);
@@ -80,6 +81,7 @@ private:
 
 private:
     int16_t m_timeValue[num];
+    int m_prevAnalogValue;
 };
 
 #endif  

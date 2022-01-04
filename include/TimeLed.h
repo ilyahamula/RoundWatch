@@ -23,7 +23,7 @@ public:
     void StopSetupBlinking();
     void GetBlinkingColor(uint8_t& r, uint8_t& g, uint8_t& b);
 
-private:
+    void AdjustBrightness(const double value);
 
 private:
     struct sRGB
@@ -39,6 +39,7 @@ private:
 private:
     double m_topBrightness;
     double m_bottomBrightness;
+    bool m_isTopOff;
 
     sRGB m_topColor;
     sRGB m_bottomColor;

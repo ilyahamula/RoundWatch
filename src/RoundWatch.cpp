@@ -3,10 +3,25 @@
 
 #define NOT_DEFINED -1
 
+namespace
+{
+    double CalculateBrightness(const int val)
+    {
+        if (val == 3)
+            return 0.1;
+        if (val == 2)
+            return 0.5;
+        if (val == 1)
+            return 1.0;
+        return 0.5;
+    }
+}
+
 RoundWatch::RoundWatch()
     : m_dials()
     , m_leds()
     , m_timeValue()
+    , m_prevAnalogValue(0)
 {
     m_timeValue[INT(DIAL::HOURS)] = NOT_DEFINED;
     m_timeValue[INT(DIAL::MINUTES)] = NOT_DEFINED;
@@ -185,6 +200,25 @@ void RoundWatch::SetRealTime(const uint8_t hour, const uint8_t min, const uint8_
 
     setTimeForWatch(DIAL::HOURS, hour);
     setTimeForWatch(DIAL::MINUTES, min);
+}
+
+void RoundWatch::AdjustBrightness(const int analogValue)
+{
+    int actual = static_cast<int>(analogValue / 1000);
+    if (actual != m_prevAnalogValue)
+    {
+        m_prevAnalogValue = actual;
+        const double newBrighness = CalculateBrightness(m_prevAnalogValue);
+        
+        if (m_leds[INT(DIAL::HOURS)])
+            m_leds[INT(DIAL::HOURS)]->AdjustBrightness(newBrighness);
+        if (m_leds[INT(DIAL::MINUTES)])
+            m_leds[INT(DIAL::MINUTES)]->AdjustBrightness(newBrighness);
+
+        Debug::Print("AnalogValue = ");
+		Debug::Print(m_prevAnalogValue);
+		Debug::Print("\n");
+    }
 }
 
 RoundWatch::WatchBlinker::WatchBlinker(RoundWatch& rw, const uint8_t r, const uint8_t g, const uint8_t b)

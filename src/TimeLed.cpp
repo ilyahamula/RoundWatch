@@ -47,6 +47,7 @@ TimeLed::TimeLed(const uint8_t pin)
     : strip(LED_COUNT, pin, NEO_GRB + NEO_KHZ800)
     , m_topBrightness(0)
     , m_bottomBrightness(0)
+    , m_isTopOff(false)
     , m_topColor()
     , m_bottomColor()
     , m_blinkingColor()
@@ -89,7 +90,7 @@ void TimeLed::Show()
     m_topBrightness, 0, 6);
 
   SetSpecificPixels(strip, m_bottomColor.red, m_bottomColor.green, m_bottomColor.blue,
-    m_bottomBrightness, 6, LED_COUNT);
+    m_bottomBrightness, 6);
 }
 
 void TimeLed::Off()
@@ -102,12 +103,14 @@ void TimeLed::Off()
 void TimeLed::OffTop()
 {
   SetSpecificPixels(strip, 0, 0, 0, 0.0, 0, 6);
+  m_isTopOff = true;
 }
 
 void TimeLed::OnTop()
 {
   SetSpecificPixels(strip, m_topColor.red, m_topColor.green, m_topColor.blue,
     m_topBrightness, 0, 6);
+  m_isTopOff = false;
 }
 
 void TimeLed::RunSetupBlinking(const uint8_t r, const uint8_t g, const uint8_t b)
@@ -145,4 +148,24 @@ void TimeLed::GetBlinkingColor(uint8_t& r, uint8_t& g, uint8_t& b)
   g = m_blinkingColor.green;
   b = m_blinkingColor.blue;
 }
-    
+
+void TimeLed::AdjustBrightness(const double value)
+{
+  m_topBrightness = value;
+  m_bottomBrightness = value;
+
+  if (!m_isTopOff)
+  {
+    SetSpecificPixels(strip, m_topColor.red, m_topColor.green, m_topColor.blue,
+      m_topBrightness, 0, 6);
+
+    SetSpecificPixels(strip, m_bottomColor.red, m_bottomColor.green, m_bottomColor.blue,
+      m_bottomBrightness, 6);
+  }
+  else
+  {
+    SetSpecificPixels(strip, 0, 0, 0, 0.0, 0, 6);
+    SetSpecificPixels(strip, m_bottomColor.red, m_bottomColor.green, m_bottomColor.blue,
+      m_bottomBrightness, 6);
+  }
+}

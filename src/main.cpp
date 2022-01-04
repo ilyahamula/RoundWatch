@@ -77,4 +77,6 @@ void loop()
 		Debug::PrintTime(timeStruct.hours, timeStruct.minutes);
 		watch.SetRealTime(timeStruct.hours, timeStruct.minutes);
 	}
+
+	watch.AdjustBrightness(analogRead(LIGHT_SENSOR_PIN));
 }
