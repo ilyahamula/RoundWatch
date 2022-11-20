@@ -7,12 +7,21 @@
 void SetupHoursDial(RoundWatch& watch)
 {
 	RoundWatch::Settings settings;
-	settings.in1 = HOURS_IN1;
-	settings.in2 = HOURS_IN2;
-	settings.in3 = HOURS_IN3;
-	settings.in4 = HOURS_IN4;
+#ifdef USE_STEPPER_28BYJ_48
+	settings.driver.type = Driver::eType::eStepper_28BYJ_48;
+	settings.driver.in1 = HOURS_IN1;
+	settings.driver.in2 = HOURS_IN2;
+	settings.driver.in3 = HOURS_IN3;
+	settings.driver.in4 = HOURS_IN4;
+#else
+#ifdef USE_DC_MOTTOR
+	settings.driver.type = Driver::eType::eDC_Motor;
+	settings.driver.dcPin = HOURS_IN1;
+#endif
+#endif
+	settings.driver.divisionPin = HOURS_DIV;
+
 	settings.ledPin = HOURS_LED;
-	settings.divisionPin = HOURS_DIV;
 	settings.topLED.red = 0;
 	settings.topLED.green = 0;
 	settings.topLED.blue = 255;
@@ -28,12 +37,21 @@ void SetupHoursDial(RoundWatch& watch)
 void SetupMinutesDial(RoundWatch& watch)
 {
 	RoundWatch::Settings settings;
-	settings.in1 = MINUTES_IN1;
-	settings.in2 = MINUTES_IN2;
-	settings.in3 = MINUTES_IN3;
-	settings.in4 = MINUTES_IN4;
+#ifdef USE_STEPPER_28BYJ_48
+	settings.driver.type = Driver::eType::eStepper_28BYJ_48;
+	settings.driver.in1 = MINUTES_IN1;
+	settings.driver.in2 = MINUTES_IN2;
+	settings.driver.in3 = MINUTES_IN3;
+	settings.driver.in4 = MINUTES_IN4;
+#else
+#ifdef USE_DC_MOTTOR
+	settings.driver.type = Driver::eType::eDC_Motor;
+	settings.driver.dcPin = MINUTES_IN1;
+#endif
+#endif
+	settings.driver.divisionPin = MINUTES_DIV;
+
 	settings.ledPin = MINUTES_LED;
-	settings.divisionPin = MINUTES_DIV;
 	settings.topLED.red = 0;
 	settings.topLED.green = 0;
 	settings.topLED.blue = 255;

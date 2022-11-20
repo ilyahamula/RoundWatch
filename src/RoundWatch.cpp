@@ -46,9 +46,8 @@ RoundWatch::~RoundWatch()
 
 void RoundWatch::AdjustDialSettings(const DIAL dial, const Settings& settings)
 {
-    SetMottorPins(dial, settings.in1, settings.in2, settings.in3, settings.in4);
+    SetupDial(dial, settings.driver);
     SetLedPin(dial, settings.ledPin);
-    SetDivisionsPin(dial, settings.divisionPin);
 
     SetBottomBrightness(dial, settings.bottomLED.brightness);
     SetBottomColor(dial, settings.bottomLED.red,
@@ -61,17 +60,10 @@ void RoundWatch::AdjustDialSettings(const DIAL dial, const Settings& settings)
         settings.topLED.blue);
 }
 
-void RoundWatch::SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3,
-    const uint8_t in4)
+void RoundWatch::SetupDial(const DIAL dial, const Driver::Settings& driverSettings)
 {
     if (!m_dials[INT(dial)])
-        m_dials[INT(dial)] = RoundDial::CreateDial(dial, in1, in2, in3, in4);
-}
-
-void RoundWatch::SetDivisionsPin(const DIAL dial, const uint8_t pin)
-{
-    if (m_dials[INT(dial)])
-        m_dials[INT(dial)]->SetDivisionsPin(pin);
+        m_dials[INT(dial)] = RoundDial::CreateDial(dial, driverSettings);
 }
 
 void RoundWatch::SetLedPin(const DIAL dial, const uint8_t pin)

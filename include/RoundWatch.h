@@ -19,14 +19,7 @@ public:
 
     struct Settings
     {
-        // Mottor's pins
-        uint8_t in1 = 0;
-        uint8_t in2 = 0;
-        uint8_t in3 = 0;
-        uint8_t in4 = 0;
-
-        uint8_t divisionPin = 0;
-
+        Driver::Settings driver;
         //Led
         uint8_t ledPin = 0;
         LED topLED;
@@ -61,8 +54,7 @@ public:
 
 private:
     // Dial`s interface
-    void SetMottorPins(const DIAL dial, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
-    void SetDivisionsPin(const DIAL dial, const uint8_t pin);
+    void SetupDial(const DIAL dial, const Driver::Settings& driverSettings);
 
     // LED`s interface
     void SetLedPin(const DIAL dial, const uint8_t pin);

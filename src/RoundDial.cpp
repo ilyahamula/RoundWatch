@@ -34,7 +34,7 @@ namespace
     }
 }
 
-RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
+RoundDial* RoundDial::CreateDial(const DIAL type, const Driver::Settings& settings)
 {
     static bool isFlashInit = false;
     if (!isFlashInit)
@@ -44,58 +44,34 @@ RoundDial* RoundDial::CreateDial(const DIAL type, const uint8_t in1, const uint8
     }
 
     if (type == DIAL::HOURS)
-        return new RoundDialHours(in1, in2, in3, in4);
+        return new RoundDialHours(settings);
     if (type == DIAL::MINUTES)
-        return new RoundDialMinutes(in1, in2, in3, in4);
+        return new RoundDialMinutes(settings);
 
     return nullptr;
 }
 
-RoundDial::RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
-    : m_stepperMotor(in1, in2, in3, in4)
+RoundDial::RoundDial(const Driver::Settings& settings)
+    : m_driver(Driver::CreateDriver(settings))
     , m_numDivisions(NOT_DEFINED)
     , m_stepsPerDiv(NOT_DEFINED)
     , m_currDiv(0)
-    , m_divisionsPin(NOT_DEFINED)
 {
 }
 
 RoundDial::~RoundDial()
 {
-}
-
-void RoundDial::SetDivisionsPin(const uint8_t pin)
-{
-    Debug::Print("\nSetDivisionsPin()");
-    m_divisionsPin = pin;
-    pinMode(m_divisionsPin, INPUT); // division button should be connected to HIGH level
-}
-
-void RoundDial::MoveStep(const bool forward)
-{
-#ifdef OLD_MOVE_DIVISION
-    const int stepsDirection = (forward ? m_stepsPerDiv : (-1 * m_stepsPerDiv));
-    m_stepperMotor.step(stepsDirection); // old realization
-#else
-    const int stepsDirection = (forward ? MIN_STEP : (-1 * MIN_STEP));
-    while (forward && !digitalRead(m_divisionsPin))
-        m_stepperMotor.step(stepsDirection);
-
-    while(digitalRead(m_divisionsPin))
-        m_stepperMotor.step(stepsDirection);
-
-    while(!digitalRead(m_divisionsPin))
-        m_stepperMotor.step(stepsDirection);
-
-    while (!forward && digitalRead(m_divisionsPin))
-        m_stepperMotor.step(stepsDirection);
-#endif
+    if (m_driver)
+    {
+        delete m_driver;
+        m_driver = nullptr;
+    }
 }
 
 void RoundDial::MoveToNextDiv()
 {
     Debug::Print("\nMoveToNextDiv()");
-    MoveStep();
+    m_driver->MoveStep();
     m_currDiv++;
     if (m_currDiv == m_numDivisions)
         m_currDiv = 0;
@@ -105,7 +81,7 @@ void RoundDial::MoveToNextDiv()
 void RoundDial::MoveToPrevDiv()
 {
     Debug::Print("\nMoveToPrevDiv()");
-    MoveStep(false);
+    m_driver->MoveStep(false);
     m_currDiv--;
     if (m_currDiv < 0)
         m_currDiv = 0;
@@ -117,41 +93,41 @@ void RoundDial::MoveByDifferense(const int8_t diff)
     if (diff > 0)
     {
         for (int8_t i = diff; i > 0; --i)
-            MoveStep();
+            m_driver->MoveStep();
     }
     else if (diff < 0)
     {
         for (int8_t i = diff; i < 0; ++i)
-            MoveStep(false);
+            m_driver->MoveStep(false);
     }
 }
 
 void RoundDial::MoveForward()
 {
-    m_stepperMotor.step(USER_STEP);
+    m_driver->MoveForward();
 }
 
 void RoundDial::MoveBackward()
 {
-    m_stepperMotor.step(-1 * USER_STEP);
+    m_driver->MoveBackward();
 }
 
 void RoundDial::MoveOneDivForward()
 {
-    MoveStep();
+    m_driver->MoveStep();
 }
 
 void RoundDial::MoveOneDivBackward()
 {
-    MoveStep(false);
+    m_driver->MoveStep(false);
 }
 
 //--------------------Dial of Hours---------------------------------------------------------------------------------------------------------
 bool RoundDialHours::m_majorDiv[HOURS_DIV_NUM] = { true, false, false, true, false, false, true, false, false, 
 true, false, false, true, false, false, true, false, false, true, false, false, true, false, false };
 
-RoundDialHours::RoundDialHours(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
-    : RoundDial(in1, in2, in3, in4)
+RoundDialHours::RoundDialHours(const Driver::Settings& settings)
+    : RoundDial(settings)
 {
     m_numDivisions = HOURS_DIV_NUM;
     m_stepsPerDiv = 100;
@@ -226,8 +202,8 @@ int RoundDialMinutes::m_minToDiv[MINUTES_NUM] =
     12,12,13,13,14,14,14,15,15,16,16,16,17,17,18,18,18,19,19,20,20,20,21,21,22,22,22,23,23,23   // div
 };
 
-RoundDialMinutes::RoundDialMinutes(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4)
-    : RoundDial(in1, in2, in3, in4)
+RoundDialMinutes::RoundDialMinutes(const Driver::Settings& settings)
+    : RoundDial(settings)
 {
     m_numDivisions = MIN_DIV_NUM;
     m_stepsPerDiv = 100;

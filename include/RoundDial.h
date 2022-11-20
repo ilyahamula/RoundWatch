@@ -2,7 +2,7 @@
 #define ROUNDIAL_H
 
 #include <Arduino.h>
-#include "Stepper_28BYJ_48.h"
+#include "Driver.h"
 
 #define HOURS_DIV_NUM 24
 #define MIN_DIV_NUM 24
@@ -20,10 +20,10 @@ class RoundDial
 {
     friend class Debug;
 public:
-    static RoundDial* CreateDial(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    static RoundDial* CreateDial(const DIAL type, const Driver::Settings& settings);
 
 public:
-    RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    RoundDial(const Driver::Settings& settings);
     virtual ~RoundDial();
 
     virtual DIAL GetType() const = 0;
@@ -32,8 +32,6 @@ public:
     virtual void Setup() = 0;
     virtual void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) = 0;
 
-    void SetDivisionsPin(const uint8_t pin);
-
 public: // for calibration through WEB interface
     void MoveForward();
     void MoveBackward();
@@ -41,26 +39,24 @@ public: // for calibration through WEB interface
     void MoveOneDivBackward();
     
 protected:
-    void MoveStep(const bool forward = true);
     void MoveToNextDiv();
     void MoveToPrevDiv();
     void MoveByDifferense(const int8_t diff);
     virtual void SaveCurrDivToStorage() = 0;
 
 protected:
-    Stepper_28BYJ_48 m_stepperMotor;
+    Driver* m_driver;
 
 protected:
     uint8_t m_numDivisions;
     uint16_t m_stepsPerDiv;
     uint8_t m_currDiv;
-    uint8_t m_divisionsPin;
 };
 
 class RoundDialHours : public RoundDial
 {
 public:
-    RoundDialHours(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    RoundDialHours(const Driver::Settings& settings);
 
     DIAL GetType() const override;
     void SetTimeValue(const uint8_t value) override;
@@ -78,7 +74,7 @@ private:
 class RoundDialMinutes : public RoundDial
 {
 public:
-    RoundDialMinutes(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    RoundDialMinutes(const Driver::Settings& settings);
 
     DIAL GetType() const override;
     void SetTimeValue(const uint8_t value) override;

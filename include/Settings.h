@@ -18,6 +18,15 @@
 
 #define LIGHT_SENSOR_PIN 34
 
+// Mottors types and pins defines
+#define USE_STEPPER_28BYJ_48
+//#define USE_DC_MOTTOR
+
+#ifdef USE_DC_MOTTOR
+#define HOURS_IN1 12
+#define MINUTES_IN1 27
+#endif
+
 // credentials
 #define BOT_TOKEN ""
 #define SSID_DEF "" 
@@ -39,7 +48,6 @@
 #define CONNECTION_TEST "/connection_test"
 
 class RoundWatch;
-
 void SetupWatch(RoundWatch& watch);
 
 #endif
