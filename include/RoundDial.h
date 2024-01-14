@@ -1,29 +1,93 @@
 #ifndef ROUNDIAL_H
-#define  ROUNDIAL_H
+#define ROUNDIAL_H
 
 #include <Arduino.h>
-#include "Stepper_28BYJ_48.h"
+#include "Driver.h"
+
+#define HOURS_DIV_NUM 24
+#define MIN_DIV_NUM 24
+#define MINUTES_NUM 60
+
+enum class DIAL
+{
+    HOURS = 0,
+    MINUTES = 1,
+
+    NUM_DIALS = 2
+};
 
 class RoundDial
 {
+    friend class Debug;
 public:
-    RoundDial(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    static RoundDial* CreateDial(const DIAL type, const Driver::Settings& settings);
 
-    void SetNumDivisions(const uint8_t divisions);
-    void SetStopperPin(const uint8_t pin);
-    void Setup();
+public:
+    RoundDial(const Driver::Settings& settings);
+    virtual ~RoundDial();
+
+    virtual DIAL GetType() const = 0;
+    virtual void SetTimeValue(const uint8_t value) = 0;
+    virtual bool IsCurDivMajor() const = 0;
+    virtual void Setup() = 0;
+    virtual void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) = 0;
+
+public: // for calibration through WEB interface
+    void MoveForward();
+    void MoveBackward();
+    void MoveOneDivForward();
+    void MoveOneDivBackward();
+    
+protected:
     void MoveToNextDiv();
+    void MoveToPrevDiv();
+    void MoveByDifferense(const int8_t diff);
+    virtual void SaveCurrDivToStorage() = 0;
 
-private:
-    void RunToZero();
+protected:
+    Driver* m_driver;
 
-private:
-    Stepper_28BYJ_48 m_stepperMotor;
-
-private:
-    uint16_t m_numDivisions;
+protected:
+    uint8_t m_numDivisions;
     uint16_t m_stepsPerDiv;
-    uint8_t m_stopperPin;
+    uint8_t m_currDiv;
+};
+
+class RoundDialHours : public RoundDial
+{
+public:
+    RoundDialHours(const Driver::Settings& settings);
+
+    DIAL GetType() const override;
+    void SetTimeValue(const uint8_t value) override;
+    bool IsCurDivMajor() const override;
+    void Setup() override;
+    void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) override;
+
+protected:
+    void SaveCurrDivToStorage() override;
+
+private:
+    static bool m_majorDiv[HOURS_DIV_NUM];
+};
+
+class RoundDialMinutes : public RoundDial
+{
+public:
+    RoundDialMinutes(const Driver::Settings& settings);
+
+    DIAL GetType() const override;
+    void SetTimeValue(const uint8_t value) override;
+    bool IsCurDivMajor() const override;
+    void Setup() override;
+    void CalibrateByIncorrectTime(const uint8_t realTime, const uint8_t shownTime) override;
+
+protected:
+    void SaveCurrDivToStorage() override;
+
+private:
+    static bool m_majorDiv[MIN_DIV_NUM];
+    static int m_minToDiv[MINUTES_NUM];
 };
 
 #endif  

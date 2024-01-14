@@ -2,8 +2,15 @@
 #define  DEBUGHEADER_H
 
 #include <Arduino.h>
-
+#include "Settings.h"
 #define DEBUG
+
+#define TEST_HOURS_DIAL Debug::TestForDialSystem(HOURS_IN1, HOURS_IN2, HOURS_IN3, HOURS_IN4, HOURS_LED, HOURS_DIV)
+#define TEST_MINUTES_DIAL Debug::TestForDialSystem(MINUTES_IN1, MINUTES_IN2, MINUTES_IN3, MINUTES_IN4, MINUTES_LED, MINUTES_DIV)
+#define TEST_HOURS_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::HOURS, HOURS_IN1, HOURS_IN2, HOURS_IN3, HOURS_IN4, HOURS_DIV)
+#define TEST_MINUTES_STEP_MOVING Debug::TestForMottorAndDivisions(DIAL::MINUTES, MINUTES_IN1, MINUTES_IN2, MINUTES_IN3, MINUTES_IN4, MINUTES_DIV)
+
+enum class DIAL;
 
 class Debug
 {
@@ -20,11 +27,25 @@ public:
         if (!m_serialSetup)
         {
             Serial.begin(9600);
+            delay(300);
             m_serialSetup = true;
         }
         Serial.print(text);
 #endif
     }
+
+    static void Print(String& str);
+    static void TestForLed(const uint16_t pin);
+    static void TestForDialDivider(const uint16_t ledPin, const uint16_t dividerPin);
+    static void TestForMottor(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4);
+    static void TestForDialSystem(const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4, 
+        const uint16_t ledPin, const uint16_t dividerPin);
+    static void TestForMottorAndDivisions(const DIAL type, const uint8_t in1, const uint8_t in2, const uint8_t in3, const uint8_t in4, 
+        const uint16_t dividerPin);
+    static void PrintTime(const int8_t hours, const int8_t min);
+
+private:
+    static int minute;
 };
 
 #endif
