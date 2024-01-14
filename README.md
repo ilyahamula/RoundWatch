@@ -6,4 +6,5 @@ Digits and divisions represented as holes in each cylinder. Time indication work
 Watch could be updated via Bluetooth Low Energy or via Wi-Fi using Telegram bot.
 
 ## Real device images
-![RoundWatch pic1](4F432001-92EC-44AD-88CD-7F6D05E7AFB6.heic)
+![RoundWatch pic1](IMG_3766.jpeg)
+![RoundWatch pic2](IMG_3764.jpeg)
